@@ -6,6 +6,9 @@ import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login
 import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_signup_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_signup_event.dart';
 import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_signup_state.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/sub_admin_main_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_signup/sub_admin_signup.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_signup/sub_admin_signup_more.dart';
 import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
@@ -53,7 +56,7 @@ class SubAdminLogin extends StatelessWidget {
                             child: TextFormField(
 
                               controller: emailController,
-                              decoration: Styles().formDecrationStyle(
+                              decoration: Styles().formDecorationStyle(
                                   icon: const Icon(Icons.mail_outlined),
                                   labelText: 'Email'),
                               style: Styles().formTextStyle(context),
@@ -69,7 +72,7 @@ class SubAdminLogin extends StatelessWidget {
                             child: TextFormField(
                               controller: passwordController,
                               obscureText: true,
-                              decoration: Styles().formDecrationStyle(
+                              decoration: Styles().formDecorationStyle(
                                   icon: const Icon(Icons.lock_outline_rounded),
                                   labelText: 'Password'),
                               style: Styles().formTextStyle(context),
@@ -99,7 +102,7 @@ class SubAdminLogin extends StatelessWidget {
                       return Container(
                         height: MediaQuery.of(context).size.width * 0.1,
                         width: MediaQuery.of(context).size.width * 0.6,
-                        decoration: Styles().elevatedButtonDecration(),
+                        decoration: Styles().elevatedButtonDecoration(),
                         child: ElevatedButton(
                             style: Styles().elevatedButtonStyle(),
                             onPressed: () {
@@ -116,10 +119,10 @@ class SubAdminLogin extends StatelessWidget {
                     },
                     listener: (context, state) {
                       if (state is SubAdminLoginSuccessState) {
-                        // Navigator.of(context).pushAndRemoveUntil(
-                        //     MaterialPageRoute(builder: (ctx) {
-                        //   return UserHome();
-                        // }), (route) => false);
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (ctx) {
+                          return SubAdminMainPage();
+                        }), (route) => false);
                       }
                       if(state is SubAdminLoginErrorState){
                         CommonWidget().errorSnackBar('Invalid username or password', context);
@@ -167,7 +170,7 @@ class SubAdminLogin extends StatelessWidget {
                                   height: 60,
                                   width: 60,
                                   decoration:
-                                      Styles().googleAuthButtonDecration(),
+                                      Styles().googleAuthButtonDecoration(),
                                   child: Padding(
                                     padding: const EdgeInsets.all(10),
                                     child:
@@ -180,10 +183,10 @@ class SubAdminLogin extends StatelessWidget {
                   ),
                   InkWell(
                     onTap: () {
-                      // Navigator.of(context)
-                      //     .push(MaterialPageRoute(builder: (ctx) {
-                      //   return UserSignUp();
-                      // }));
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (ctx) {
+                        return SubAdminSignUp();
+                      }));
                     },
                     child: RichText(
                         text: TextSpan(children: [
@@ -203,14 +206,14 @@ class SubAdminLogin extends StatelessWidget {
                 context.read<SubAdminLoginBloc>().add(SubAdminAlredyLoginEvent(
                     userCredential: state.userCredential,
                     userId: state.userId));
-                // Navigator.of(context).pushAndRemoveUntil(
-                //     MaterialPageRoute(builder: (ctx) {
-                //   return UserHome();
-                // }), (route) => false);
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (ctx) {
+                  return SubAdminMainPage();
+                }), (route) => false);
               } else if (state is SubAdminSignupAuthenticationSuccess) {
-                // Navigator.of(context).push(MaterialPageRoute(builder: (ctx){
-                //   return UserSignUpMoreInfo();
-                // }));
+                Navigator.of(context).push(MaterialPageRoute(builder: (ctx){
+                  return SubAdminSignUpMoreInfo();
+                }));
               }
             },
           ),

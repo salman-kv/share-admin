@@ -7,7 +7,7 @@ class Styles {
   // form filed style
 
   // *****************************************************************************************************************************
-  formDecrationStyle({required String labelText, required Icon icon}) {
+  formDecorationStyle({required String labelText, required Icon icon}) {
     return InputDecoration(
       border: InputBorder.none,
       fillColor: const Color.fromARGB(255, 242, 242, 242),
@@ -57,13 +57,13 @@ class Styles {
 
   // *****************************************************************************************************************************
 
-  elevatedButtonDecration() {
+  elevatedButtonDecoration() {
     return BoxDecoration(
       borderRadius: BorderRadius.circular(100),
       gradient: LinearGradient(
         colors: [
-          ConstColors().main2Colorpur,
           ConstColors().mainColorpurple,
+          ConstColors().main2Colorpur,
         ],
       ),
     );
@@ -85,13 +85,13 @@ class Styles {
 
   // *****************************************************************************************************************************
 
-  customNextButtonDecration() {
+  customNextButtonDecoration() {
     return BoxDecoration(
       borderRadius: BorderRadius.circular(100),
-      gradient:  LinearGradient(
+      gradient: LinearGradient(
         colors: [
+          ConstColors().mainColorpurple,
           ConstColors().main2Colorpur,
-          ConstColors().mainColorpurple
         ],
       ),
     );
@@ -111,11 +111,25 @@ class Styles {
 
   // *****************************************************************************************************************************
 
-  googleAuthButtonDecration() {
+  googleAuthButtonDecoration() {
     return BoxDecoration(
       border:
           Border.all(color: const Color.fromARGB(255, 214, 214, 214), width: 2),
       borderRadius: BorderRadius.circular(10),
+    );
+  }
+
+  // *****************************************************************************************************************************
+
+  // rounded add button
+
+  // *****************************************************************************************************************************
+
+  roundedAddButtonChild() {
+    return const Icon(
+      Icons.add,
+      color: Colors.white,
+      size: 30,
     );
   }
 }

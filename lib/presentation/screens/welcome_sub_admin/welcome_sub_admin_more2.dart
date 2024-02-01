@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_login/sub_admin_login_page.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 class WelcomeSubAdminMore2 extends StatelessWidget {
@@ -67,15 +68,15 @@ class WelcomeSubAdminMore2 extends StatelessWidget {
               ),
             ),
             InkWell(
-              // onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              //         return  UserLogin();
-              //       },)),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                      return  SubAdminLogin();
+                    },)),
               child: Padding(
                 padding: const EdgeInsets.all(15),
                 child: Container(
                   height: 60,
                   width: 60,
-                  decoration: Styles().customNextButtonDecration(),
+                  decoration: Styles().customNextButtonDecoration(),
                   child: Styles().customNextButtonChild(),
                 ),
               ),

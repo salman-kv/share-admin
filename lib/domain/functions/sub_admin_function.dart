@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
@@ -15,7 +16,7 @@ class SubAdminFunction {
   // add user in to firestore
 
   addSubAdminDeatails(SubAdminModel subAdminModel, String compire) async {
-    final instant = FirebaseFirestore.instance.collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection);
+    final instant = FirebaseFirestore.instance.collection(FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection);
     await instant.where(compire, isEqualTo: subAdminModel.email).get();
     final result = await instant.add(subAdminModel.fromMap());
     return result.id;
@@ -51,7 +52,7 @@ class SubAdminFunction {
   // checkig user deatailes already logind or not , if login sent the id otherwise send false
 
   checkSubAdminIsAlredyTheirOrNot(String email, String compare) async {
-    final instant = FirebaseFirestore.instance.collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection);
+    final instant = FirebaseFirestore.instance.collection(FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection);
     final val = await instant.where(compare, isEqualTo: email).get();
     if (val.docs.isNotEmpty) {
       return val.docs.first.id;
@@ -64,7 +65,7 @@ class SubAdminFunction {
 
   subAdminLoginPasswordAndEmailChecking(String email, String password) async {
     try {
-      final instant = FirebaseFirestore.instance.collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection);
+      final instant = FirebaseFirestore.instance.collection(FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection);
       final val = await instant
           .where(FirebaseFirestoreConst.firebaseFireStoreEmail,
               isEqualTo: email)
@@ -89,7 +90,7 @@ class SubAdminFunction {
 
   fecchSubAdminDataById(String userId) async {
     final val = await FirebaseFirestore.instance
-        .collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection)
+        .collection(FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection)
         .doc(userId).get();
     var a= SubAdminModel(userId: userId, email: val['email'], name: val['name'], password: val['password'], phone: val['phone'], imagePath: val['image']);
     return a;
@@ -103,6 +104,5 @@ class SubAdminFunction {
     final imageUrl=await ref.getDownloadURL();
   return imageUrl;
   }
-
 
 }

@@ -77,7 +77,7 @@ class WelcomeSubAdminMore extends StatelessWidget {
                 child: Container(
                   height: 60,
                   width: 60,
-                  decoration: Styles().customNextButtonDecration(),
+                  decoration: Styles().customNextButtonDecoration(),
                   child: Styles().customNextButtonChild(),
                 ),
               ),

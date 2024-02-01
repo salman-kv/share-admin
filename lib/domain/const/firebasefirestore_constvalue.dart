@@ -1,5 +1,5 @@
 class FirebaseFirestoreConst {
   static String firebaseFireStoreEmail = 'email';
   static String firebaseFireStorePassword = 'password';
-  static String firebaseFireStoreUserCollection = 'admin';
+  static String firebaseFireStoreSubAdminCollection = 'subadmin';
 }

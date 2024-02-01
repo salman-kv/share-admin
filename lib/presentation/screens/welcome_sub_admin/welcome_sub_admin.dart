@@ -29,7 +29,7 @@ class WelcomeSubAdmin extends StatelessWidget {
             Container(
               height: MediaQuery.of(context).size.width * 0.1,
               width: MediaQuery.of(context).size.width * 0.6,
-              decoration: Styles().elevatedButtonDecration(),
+              decoration: Styles().elevatedButtonDecoration(),
               child: ElevatedButton(
                   style: Styles().elevatedButtonStyle(),
                   onPressed: () {
