@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_bloc.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/sub_admin_main_page.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
@@ -51,12 +53,12 @@ class SubAdminSignUpsuccess extends StatelessWidget {
                   onPressed: () async {
                     Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (ctx) {
-                      return  SubAdminMainPage();
+                      return  SubAdminMainPage(userId: context.read<SubAdminLoginBloc>().userId!,);
                     }), (route) => false);
                   },
                   child: Text(
                     'Finish',
-                    style: Styles().elevatedButtonTextStyle(),
+                    style: Styles().elevatedButtonTextStyle(context),
                   )),
             ),
           ],

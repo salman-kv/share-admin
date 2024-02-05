@@ -71,7 +71,7 @@ class SubAdminSignUp extends StatelessWidget {
                           color: Colors.white,
                         ) :  Text(
                           'verify',
-                          style: Styles().elevatedButtonTextStyle(),
+                          style: Styles().elevatedButtonTextStyle(context),
                         )),
                   );
                   },listener: (context, state) {

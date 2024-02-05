@@ -62,7 +62,7 @@ class SubAdminSignUpOtp extends StatelessWidget {
                                     },
                                     child: state is ManualEmailCheckingLoadingState ? const CircularProgressIndicator() : Text(
                                       'Verify',
-                                      style: Styles().elevatedButtonTextStyle(),
+                                      style: Styles().elevatedButtonTextStyle(context),
                                     )),
                               ),
                             ],

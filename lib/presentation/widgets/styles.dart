@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
 
 class Styles {
@@ -16,6 +17,20 @@ class Styles {
       labelStyle: const TextStyle(
           color: Color.fromARGB(255, 111, 111, 111), fontSize: 16),
       prefixIcon: icon,
+    );
+  }
+
+  formDecorationStyleWithSufix(
+      {required String labelText, required Icon icon, required Widget sufix}) {
+    return InputDecoration(
+      border: InputBorder.none,
+      fillColor: const Color.fromARGB(255, 242, 242, 242),
+      filled: true,
+      labelText: labelText,
+      labelStyle: const TextStyle(
+          color: Color.fromARGB(255, 111, 111, 111), fontSize: 16),
+      prefixIcon: icon,
+      // suffix: sufix
     );
   }
 
@@ -68,17 +83,29 @@ class Styles {
       ),
     );
   }
+ 
+
 
   elevatedButtonStyle() {
     return ElevatedButton.styleFrom(
         backgroundColor: Colors.transparent, shadowColor: Colors.transparent);
   }
 
-  elevatedButtonTextStyle() {
-    return const TextStyle(
-        color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold);
+  elevatedButtonTextStyle(BuildContext context) {
+    return Theme.of(context).textTheme.labelLarge;
+  }
+  elevatedButtonBorderOnlyTextStyle(BuildContext context) {
+    return Theme.of(context).textTheme.labelSmall;
   }
 
+
+
+
+
+  elevatedButtonBorderOnlyStyle() {
+    return ElevatedButton.styleFrom(
+        backgroundColor:const Color.fromARGB(255, 26, 24, 24), shadowColor: Colors.transparent);
+  }
   // *****************************************************************************************************************************
 
   // next button style
@@ -131,5 +158,42 @@ class Styles {
       color: Colors.white,
       size: 30,
     );
+  }
+
+  // *****************************************************************************************************************************
+
+  // image container
+
+  // *****************************************************************************************************************************
+
+  imageContainerDecration() {
+    return BoxDecoration(
+        // image: DecorationImage(image: AssetImage(image.p)),
+        color: ConstColors().mainColorpurple.withOpacity(0.3),
+        borderRadius: const BorderRadius.all(Radius.circular(20)));
+  }
+
+  // *****************************************************************************************************************************
+
+  // edit and delete button
+
+  // ****************************************************************************************************************************
+
+  deleteElevatedButtonStyle() {
+    return ElevatedButton.styleFrom(
+        backgroundColor: const Color.fromARGB(255, 224, 13, 13));
+  }
+
+  deleteButtonTextStyle(BuildContext context) {
+    return const TextStyle(color: Colors.white);
+  }
+
+  editElevatedButtonStyle() {
+    return ElevatedButton.styleFrom(
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255));
+  }
+
+  editButtonTextStyle(BuildContext context) {
+    return const TextStyle(color: Colors.black);
   }
 }

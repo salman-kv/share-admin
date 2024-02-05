@@ -39,7 +39,7 @@ class WelcomeSubAdmin extends StatelessWidget {
                   },
                   child: Text(
                     'Get Start',
-                    style: Styles().elevatedButtonTextStyle(),
+                    style: Styles().elevatedButtonTextStyle(context),
                   )),
             ),
             const SizedBox(

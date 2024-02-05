@@ -261,7 +261,7 @@ class SubAdminSignUpMoreInfo extends StatelessWidget {
                                     )
                                     : Text(
                                         'Submit',
-                                        style: Styles().elevatedButtonTextStyle(),
+                                        style: Theme.of(context).textTheme.displayMedium,
                                       )),
                           ),
                         ],

@@ -4,7 +4,8 @@ class SubAdminModel {
   final int phone;
   final String imagePath;
   final String email;
-  final String? userId;
+   String? userId;
+   List<String>? hotels;
 
   SubAdminModel( {required this.userId,required this.email, required this.name, required this.password, required this.phone, required this.imagePath});
 

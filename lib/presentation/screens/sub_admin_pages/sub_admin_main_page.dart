@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:motion_tab_bar_v2/motion-tab-bar.dart';
+import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_main_page_bloc/sub_admin_main_page_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_main_page_bloc/sub_admin_main_page_event.dart';
 import 'package:share_sub_admin/application/sub_admin_main_page_bloc/sub_admin_main_page_state.dart';
@@ -12,9 +13,10 @@ import 'package:share_sub_admin/presentation/screens/sub_admin_pages/main%20_pag
 import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 
 class SubAdminMainPage extends StatelessWidget {
-  SubAdminMainPage({super.key});
+  final String userId;
+  SubAdminMainPage({required this.userId,super.key});
 
-  List<Widget> screens = [
+  List<Widget> screens = const [
     SubAdminHomePage(),
     SubAdminBookinPage(),
     SubAdminMessagePage(),
@@ -23,6 +25,7 @@ class SubAdminMainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.read<SubAdminLoginBloc>().userId=userId;
     return BlocProvider(
       create: (context) => SubAdminMainPageBloc(),
       child: BlocConsumer<SubAdminMainPageBloc, SubAdminMainPageState>(
@@ -54,10 +57,10 @@ class SubAdminMainPage extends StatelessWidget {
                 labels: const ["Home", "Booking", "Message", "Property"],
                 textStyle: Theme.of(context).textTheme.displaySmall,
                 icons: const [
-                  Icons.home,
+                  Icons.window_rounded,
                   Icons.calendar_month,
                   Icons.message_rounded,
-                  Icons.portrait
+                  Icons.maps_home_work_rounded
                 ],
                 onTabItemSelected: (value) {
                   BlocProvider.of<SubAdminMainPageBloc>(context)

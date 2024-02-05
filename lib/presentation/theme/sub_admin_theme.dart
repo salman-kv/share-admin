@@ -9,13 +9,13 @@ class SubAdminThme {
       // large text like big heading
       bodyLarge: GoogleFonts.poppins(
         fontWeight: FontWeight.bold,
-        fontSize: 24,
+        fontSize: 22,
       ),
       // small grey fonts
       bodySmall: GoogleFonts.poppins(
-        fontWeight: FontWeight.normal,
+        // fontWeight: FontWeight.normal,
         color: Colors.grey,
-        fontSize: 18,
+        fontSize: 16,
       ),
       // normal letters large
       displayLarge: GoogleFonts.poppins(
@@ -24,7 +24,7 @@ class SubAdminThme {
       ),
       // normal letters meadium
       displayMedium: GoogleFonts.poppins(
-        fontWeight: FontWeight.normal,
+        // fontWeight: FontWeight.normal,
         fontSize: 16,
       ),
       // normal letters small
@@ -35,17 +35,32 @@ class SubAdminThme {
       // titile with bold large
       titleLarge:  GoogleFonts.poppins(
         fontWeight: FontWeight.bold,
-        fontSize: 20,
-      ),
-      // titile with bold large
-      titleMedium:  GoogleFonts.poppins(
-        fontWeight: FontWeight.bold,
         fontSize: 18,
       ),
-      // titile with bold large
-      titleSmall:  GoogleFonts.poppins(
+      titleMedium:  GoogleFonts.poppins(
         fontWeight: FontWeight.bold,
         fontSize: 16,
+      ),
+      titleSmall: GoogleFonts.poppins(
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+      ),
+      // label for title text with invers
+       labelLarge: GoogleFonts.poppins(
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+        fontSize: 18,
+      ),
+     
+      labelMedium:  GoogleFonts.poppins(
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+        fontSize: 16,
+      ),
+        labelSmall: GoogleFonts.poppins(
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+        fontSize: 14,
       ),
     ),
   );
@@ -55,22 +70,22 @@ class SubAdminThme {
        textTheme: TextTheme(
       bodyLarge: GoogleFonts.poppins(
         fontWeight: FontWeight.bold,
-        fontSize: 24,
+        fontSize: 22,
       ),
       bodySmall: GoogleFonts.poppins(
         fontWeight: FontWeight.normal,
         color: Colors.grey,
-        fontSize: 16,
+        fontSize: 14,
       ),
        // normal letters meadium
       displayMedium: GoogleFonts.poppins(
         fontWeight: FontWeight.normal,
-        fontSize: 16,
+        fontSize: 14,
       ),
       // normal letters small
       displaySmall: GoogleFonts.poppins(
         fontWeight: FontWeight.normal,
-        fontSize: 14,
+        fontSize: 12,
       ),
     ),
   );

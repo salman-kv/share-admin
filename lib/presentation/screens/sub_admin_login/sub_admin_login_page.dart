@@ -113,7 +113,7 @@ class SubAdminLogin extends StatelessWidget {
                             },
                             child: Text(
                               'Login',
-                              style: Styles().elevatedButtonTextStyle(),
+                              style: Styles().elevatedButtonTextStyle(context),
                             )),
                       );
                     },
@@ -121,7 +121,7 @@ class SubAdminLogin extends StatelessWidget {
                       if (state is SubAdminLoginSuccessState) {
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(builder: (ctx) {
-                          return SubAdminMainPage();
+                          return SubAdminMainPage(userId: context.read<SubAdminLoginBloc>().userId!,);
                         }), (route) => false);
                       }
                       if(state is SubAdminLoginErrorState){
@@ -202,13 +202,14 @@ class SubAdminLogin extends StatelessWidget {
               );
             },
             listener: (context, state) {
-              if (state is SubAdminAlredySignupState) {
+              if (state is SubAdminAlredySignupState)   {
                 context.read<SubAdminLoginBloc>().add(SubAdminAlredyLoginEvent(
                     userCredential: state.userCredential,
                     userId: state.userId));
+                     
                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (ctx) {
-                  return SubAdminMainPage();
+                    MaterialPageRoute(builder: (ctx)  {
+                  return SubAdminMainPage(userId: context.read<SubAdminLoginBloc>().userId!,);
                 }), (route) => false);
               } else if (state is SubAdminSignupAuthenticationSuccess) {
                 Navigator.of(context).push(MaterialPageRoute(builder: (ctx){
