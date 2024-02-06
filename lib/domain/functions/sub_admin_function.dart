@@ -14,6 +14,8 @@ import 'package:share_sub_admin/domain/model/sub_admin_model.dart';
 import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 
 class SubAdminFunction {
+  // -----------------------------------------------------------------------------------------------------------
+
   // add user in to firestore
 
   addSubAdminDeatails(SubAdminModel subAdminModel, String compire) async {
@@ -46,53 +48,7 @@ class SubAdminFunction {
       userData['hotel'].add(hotelId);
     }
     instant.doc(userId).update(userData);
-     
   }
-
-  // add room deatailes
-
-  addSubAdminRoomDeatails(RoomModel roomModel) async {
-    final instant = FirebaseFirestore.instance
-        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection);
-    final result = await instant.add(RoomModel.toMap(roomModel));
-    return result.id;
-  }
-
-    addRoomlIdToHotelDocument(String hotelId, String roomId) async {
-      log('hotelid');
-    log(hotelId);
-    Map<String, dynamic> userData = {};
-    final instant = FirebaseFirestore.instance
-        .collection(FirebaseFirestoreConst.firebaseFireStoreHotelCollection);
-    await instant.doc(hotelId).get().then((value) {
-      userData = value.data() as Map<String, dynamic>;
-    });
-    if (userData[FirebaseFirestoreConst.firebaseFireStoreRooms] == null) {
-      userData[FirebaseFirestoreConst.firebaseFireStoreRooms] = [roomId];
-    } else {
-      userData[FirebaseFirestoreConst.firebaseFireStoreRooms].add(roomId);
-    }
-    instant.doc(hotelId).update(userData);
-     
-  }
-
-  // futureHotelFetching() async {
-  //   Map<String, dynamic> userData = {};
-  //   String userId=await SharedPreferencesClass.getUserId();
-  //   await FirebaseFirestore.instance.collection(FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection).doc(userId).get().then((value){
-  //     userData=value.data() as Map<String ,dynamic>;
-  //   });
-  //   List<dynamic> hotelList=userData['hotel'];
-  //   List<dynamic> hotelDeatailedList=[];
-  //   final hotelInstants= FirebaseFirestore.instance.collection(FirebaseFirestoreConst.firebaseFireStoreHotel);
-  //   await Future.forEach(hotelList, (element)async{
-  //    var returnHotel= await hotelInstants.doc(element).get();
-  //    var singleHotel=returnHotel.data() as Map<String,dynamic>;
-  //    hotelDeatailedList.add(singleHotel);
-  //   });
-  //   print('++++++++++++++');
-  //   return hotelDeatailedList;
-  // }
 
   // checking and authenticate user deatailes and send user credential
 
@@ -109,6 +65,48 @@ class SubAdminFunction {
       log('$e');
     }
   }
+
+// -----------------------------------------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------------------------------------
+
+  // add room deatailes
+
+  addSubAdminRoomDeatails(RoomModel roomModel) async {
+    final instant = FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection);
+    final result = await instant.add(RoomModel.toMap(roomModel));
+    return result.id;
+  }
+
+  addRoomlIdToHotelDocument(String hotelId, String roomId) async {
+    log('hotelid');
+    log(hotelId);
+    Map<String, dynamic> userData = {};
+    final instant = FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreHotelCollection);
+    await instant.doc(hotelId).get().then((value) {
+      userData = value.data() as Map<String, dynamic>;
+    });
+    if (userData[FirebaseFirestoreConst.firebaseFireStoreRooms] == null) {
+      userData[FirebaseFirestoreConst.firebaseFireStoreRooms] = [roomId];
+    } else {
+      userData[FirebaseFirestoreConst.firebaseFireStoreRooms].add(roomId);
+    }
+    instant.doc(hotelId).update(userData);
+  }
+
+  // adding room deatails in to room collection to firebase
+
+  addingRoomDeatails({required String hotelId}) async {
+    var instant = FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection);
+    instant.add({'sdf': 'hai'});
+  }
+
+// -----------------------------------------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------------------------------------
 
   // user pick image and send the image file
 
@@ -131,6 +129,32 @@ class SubAdminFunction {
       log('$e');
     }
   }
+
+  // store image in to image path in firebase and send back the download url as image url
+
+  uploadImageToFirebase(XFile xfile) async {
+    final ref = FirebaseStorage.instance.ref('image').child(xfile.name);
+    await ref.putFile(File(xfile.path));
+    final imageUrl = await ref.getDownloadURL();
+    return imageUrl;
+  }
+
+  // store image in to image path in firebase and send back the download url as image url for a list of image
+
+  uploadListImageToFirebase(List<XFile> xfile) async {
+    List<String> image = [];
+    for (XFile i in xfile) {
+      final ref = FirebaseStorage.instance
+          .ref(FirebaseFirestoreConst.firebaseFireStoreImages)
+          .child(i.name);
+      await ref.putFile(File(i.path));
+      final imgeUrl = await ref.getDownloadURL();
+      image.add(imgeUrl);
+    }
+    return image;
+  }
+
+// -----------------------------------------------------------------------------------------------------------
 
   // checkig user deatailes already logind or not , if login sent the id otherwise send false
 
@@ -187,28 +211,6 @@ class SubAdminFunction {
     return a;
   }
 
-  // store image in to image path in firebase and send back the download url as image url
-
-  uploadImageToFirebase(XFile xfile) async {
-    final ref = FirebaseStorage.instance.ref('image').child(xfile.name);
-    await ref.putFile(File(xfile.path));
-    final imageUrl = await ref.getDownloadURL();
-    return imageUrl;
-  }
-
-  // store image in to image path in firebase and send back the download url as image url for a list of image
-
-  uploadListImageToFirebase(List<XFile> xfile) async {
-    List<String> image = [];
-    for (XFile i in xfile) {
-      final ref = FirebaseStorage.instance.ref(FirebaseFirestoreConst.firebaseFireStoreImages).child(i.name);
-      await ref.putFile(File(i.path));
-      final imgeUrl = await ref.getDownloadURL();
-      image.add(imgeUrl);
-    }
-    return image;
-  }
-
   // get current postional of user
 
   Future<Position> getCurrentPosition() async {
@@ -235,14 +237,4 @@ class SubAdminFunction {
     var currentPostion = await Geolocator.getCurrentPosition();
     return currentPostion;
   }
-
-
-  // adding room deatails in to room collection to firebase
-
-  addingRoomDeatails({required String hotelId})async{
-    var instant=FirebaseFirestore.instance.collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection);
-    instant.add({'sdf':'hai'});
-  }
-
-
 }

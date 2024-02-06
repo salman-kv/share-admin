@@ -30,7 +30,10 @@ class Styles {
       labelStyle: const TextStyle(
           color: Color.fromARGB(255, 111, 111, 111), fontSize: 16),
       prefixIcon: icon,
-      // suffix: sufix
+      suffix: SizedBox(
+        height: 15,
+        width: 15,
+        child: sufix)
     );
   }
 

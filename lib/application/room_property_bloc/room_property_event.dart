@@ -31,3 +31,9 @@ class OnAddRoomDeatailsEvent extends RoomPropertyEvent{
   OnAddRoomDeatailsEvent({required this.roomNumber, required this.price});
 
 }
+class RoomNumberTypingEvent extends RoomPropertyEvent{
+  final String roomNumber;
+  final String hotelId;
+
+  RoomNumberTypingEvent({required this.roomNumber, required this.hotelId});
+}

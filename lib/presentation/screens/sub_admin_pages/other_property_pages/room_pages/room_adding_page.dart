@@ -1,29 +1,33 @@
+import 'dart:async';
+
 import 'dart:io';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:share_sub_admin/application/main_property_bloc/main_property_bloc.dart';
 
 import 'package:share_sub_admin/application/room_property_bloc/room_property_bloc.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_event.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_state.dart';
-import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
 import 'package:share_sub_admin/domain/enum/hotel_type.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
+import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 class RoomAddingPage extends StatelessWidget {
   RoomAddingPage({super.key});
 
   final formKey = GlobalKey<FormState>();
-  final roomIdKey = GlobalKey<FormState>();
-  final pricedKey = GlobalKey<FormState>();
+  final roomIdKey = GlobalKey<FormFieldState>();
+  final pricedKey = GlobalKey<FormFieldState>();
+  final bedKey = GlobalKey<FormFieldState>();
 
   final roomIdController = TextEditingController();
   final priceController = TextEditingController();
   final bedNumberController = TextEditingController();
   final featuresController = TextEditingController();
+
+  Timer? _debouncer;
 
   @override
   Widget build(BuildContext context) {
@@ -53,21 +57,42 @@ class RoomAddingPage extends StatelessWidget {
                         borderRadius:
                             const BorderRadius.all(Radius.circular(20)),
                         child: TextFormField(
-                          keyboardType: TextInputType.number,
                           key: roomIdKey,
                           validator: (value) {
-                            if ((!RegExp(r'^\S+(?!\d+$)').hasMatch(value!))) {
+                            if ((!RegExp(r'^\S+(?!\d+$)').hasMatch(value!)) ||
+                                BlocProvider.of<RoomPropertyBloc>(context)
+                                        .roomNumber ==
+                                    null) {
                               return 'enter valid Room Number';
                             } else {
                               return null;
                             }
                           },
                           onChanged: (value) {
-                            roomIdKey.currentState!.validate();
+                            if (_debouncer != null) {
+                              _debouncer!.cancel();
+                            }
+                            _debouncer = Timer(
+                                const Duration(milliseconds: 500), () async {
+                              BlocProvider.of<RoomPropertyBloc>(context).add(
+                                  RoomNumberTypingEvent(
+                                      roomNumber: value,
+                                      hotelId:
+                                          BlocProvider.of<RoomPropertyBloc>(
+                                                  context)
+                                              .hotelId!));
+                            });
+                            // roomIdKey.currentState!.validate();
                           },
                           controller: roomIdController,
                           decoration: Styles().formDecorationStyleWithSufix(
-                              sufix: const CircularProgressIndicator(),
+                              sufix: roomIdController.text.isEmpty
+                                  ? const SizedBox()
+                                  : state is RoomNumberTypingState
+                                      ? const CircularProgressIndicator()
+                                      : state is RoomNumberSuccessState
+                                          ? const Icon(Icons.done)
+                                          : const Icon(Icons.cancel),
                               icon: const Icon(Icons.roofing_rounded),
                               labelText: 'Room Number'),
                           style: Styles().formTextStyle(context),
@@ -94,8 +119,7 @@ class RoomAddingPage extends StatelessWidget {
                             pricedKey.currentState!.validate();
                           },
                           controller: priceController,
-                          decoration: Styles().formDecorationStyleWithSufix(
-                              sufix: const CircularProgressIndicator(),
+                          decoration: Styles().formDecorationStyle(
                               icon: const Icon(Icons.attach_money_rounded),
                               labelText: 'Price'),
                           style: Styles().formTextStyle(context),
@@ -128,9 +152,13 @@ class RoomAddingPage extends StatelessWidget {
                                         255, 242, 242, 242),
                                   ),
                                 ),
-                                value: BlocProvider.of<RoomPropertyBloc>(context).numberOfBed ,
+                                value:
+                                    BlocProvider.of<RoomPropertyBloc>(context)
+                                        .numberOfBed,
                                 onChanged: (value) {
-                                  BlocProvider.of<RoomPropertyBloc>(context).add(OnBedSelectEvent(numberOfBed: value!));
+                                  BlocProvider.of<RoomPropertyBloc>(context)
+                                      .add(OnBedSelectEvent(
+                                          numberOfBed: value!));
                                 },
                                 hint: const Row(
                                   children: [
@@ -162,7 +190,7 @@ class RoomAddingPage extends StatelessWidget {
                                   const BorderRadius.all(Radius.circular(20)),
                               child: TextFormField(
                                 keyboardType: TextInputType.number,
-                                // key: pricedKey,
+                                key: bedKey,
                                 validator: (value) {
                                   if ((!RegExp(r'^\S+(?!\d+$)')
                                       .hasMatch(value!))) {
@@ -172,15 +200,16 @@ class RoomAddingPage extends StatelessWidget {
                                   }
                                 },
                                 onChanged: (value) {
-                                  BlocProvider.of<RoomPropertyBloc>(context).add(OnBedSelectEvent(numberOfBed: int.parse(bedNumberController.text)));
+                                  BlocProvider.of<RoomPropertyBloc>(context)
+                                      .add(OnBedSelectEvent(
+                                          numberOfBed: int.parse(
+                                              bedNumberController.text)));
+                                  bedKey.currentState!.validate();
                                 },
                                 controller: bedNumberController,
-                                decoration: Styles()
-                                    .formDecorationStyleWithSufix(
-                                        sufix:
-                                            const CircularProgressIndicator(),
-                                        icon: const Icon(Icons.bed),
-                                        labelText: 'Number Of Bed'),
+                                decoration: Styles().formDecorationStyle(
+                                    icon: const Icon(Icons.bed),
+                                    labelText: 'Number Of Bed'),
                                 style: Styles().formTextStyle(context),
                               ),
                             ),
@@ -233,22 +262,22 @@ class RoomAddingPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                     BlocProvider.of<RoomPropertyBloc>(context)
-                                .features
-                                .isEmpty ? const SizedBox():
-                                Container(
-                      margin: const EdgeInsets.all(20),
-                      padding: const EdgeInsets.all(10),
-                      constraints: const BoxConstraints(minHeight: 100),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color:
-                              ConstColors().mainColorpurple.withOpacity(0.3)),
-                      child: Wrap(
-                        children: List.generate(
-                                BlocProvider.of<RoomPropertyBloc>(context)
-                                    .features
-                                    .length, (index) {
+                    BlocProvider.of<RoomPropertyBloc>(context).features.isEmpty
+                        ? const SizedBox()
+                        : Container(
+                            margin: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(10),
+                            constraints: const BoxConstraints(minHeight: 100),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: ConstColors()
+                                    .mainColorpurple
+                                    .withOpacity(0.3)),
+                            child: Wrap(
+                              children: List.generate(
+                                  BlocProvider.of<RoomPropertyBloc>(context)
+                                      .features
+                                      .length, (index) {
                                 return Padding(
                                   padding: const EdgeInsets.all(5),
                                   child: ChoiceChip(
@@ -282,28 +311,23 @@ class RoomAddingPage extends StatelessWidget {
                                   ),
                                 );
                               }),
-                      ),
-                    ),
-                     SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: List.generate(
+                            ),
+                          ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: List.generate(
+                            context.watch<RoomPropertyBloc>().image.isEmpty
+                                ? 1
+                                : context.read<RoomPropertyBloc>().image.length,
+                            (index) {
+                          return Container(
+                            margin: const EdgeInsets.all(20),
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            height: MediaQuery.of(context).size.height * 0.25,
+                            decoration: Styles().imageContainerDecration(),
+                            child:
                                 context.watch<RoomPropertyBloc>().image.isEmpty
-                                    ? 1
-                                    : context
-                                        .read<RoomPropertyBloc>()
-                                        .image
-                                        .length, (index) {
-                              return Container(
-                                margin: const EdgeInsets.all(20),
-                                width: MediaQuery.of(context).size.width * 0.9,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.25,
-                                decoration: Styles().imageContainerDecration(),
-                                child: context
-                                        .watch<RoomPropertyBloc>()
-                                        .image
-                                        .isEmpty
                                     ? Center(
                                         child: Text(
                                           'pls add some image of this property',
@@ -316,25 +340,28 @@ class RoomAddingPage extends StatelessWidget {
                                         .watch<RoomPropertyBloc>()
                                         .image[index]
                                         .path)),
-                              );
-                            }),
-                          ),
-                        ),
+                          );
+                        }),
+                      ),
+                    ),
                     Container(
                       height: MediaQuery.of(context).size.width * 0.1,
-                      constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width * 0.3,),
-                      margin:const EdgeInsets.all(10),
+                      constraints: BoxConstraints(
+                        minWidth: MediaQuery.of(context).size.width * 0.3,
+                      ),
+                      margin: const EdgeInsets.all(10),
                       child: ElevatedButton(
                           style: Styles().elevatedButtonBorderOnlyStyle(),
                           onPressed: () {
-                            BlocProvider.of<RoomPropertyBloc>(context).add(OnClickToAddMultipleImageEvent());
+                            BlocProvider.of<RoomPropertyBloc>(context)
+                                .add(OnClickToAddMultipleImageEvent());
                           },
                           child: Text(
                             'Add Image',
-                            style: Styles().elevatedButtonBorderOnlyTextStyle(context),
+                            style: Styles()
+                                .elevatedButtonBorderOnlyTextStyle(context),
                           )),
                     ),
-                    
                     Container(
                       height: MediaQuery.of(context).size.width * 0.1,
                       width: MediaQuery.of(context).size.width * 0.6,
@@ -342,21 +369,65 @@ class RoomAddingPage extends StatelessWidget {
                       child: ElevatedButton(
                           style: Styles().elevatedButtonStyle(),
                           onPressed: () {
-                             BlocProvider.of<RoomPropertyBloc>(context).add(OnAddRoomDeatailsEvent(roomNumber: roomIdController.text, price: int.parse(priceController.text),),);
+                            if (formKey.currentState!.validate()) {
+                              if (BlocProvider.of<RoomPropertyBloc>(context)
+                                      .numberOfBed ==
+                                  null) {
+                                CommonWidget().errorSnackBar(
+                                    'Pleas enter valid Deatailes about bed',
+                                    context);
+                                return;
+                              } else if (BlocProvider.of<RoomPropertyBloc>(
+                                      context)
+                                  .features
+                                  .isEmpty) {
+                                CommonWidget().errorSnackBar(
+                                    'Pleas enter atleast one feature about this room',
+                                    context);
+                                return;
+                              } else if (BlocProvider.of<RoomPropertyBloc>(
+                                      context)
+                                  .image
+                                  .isEmpty) {
+                                CommonWidget().errorSnackBar(
+                                    'Pleas enter atleast one image o this room',
+                                    context);
+                                return;
+                              }
+
+                              BlocProvider.of<RoomPropertyBloc>(context).add(
+                                OnAddRoomDeatailsEvent(
+                                  roomNumber: roomIdController.text,
+                                  price: int.parse(priceController.text),
+                                ),
+                              );
+                            } else {
+                              CommonWidget().errorSnackBar(
+                                  'Please fill all fielda', context);
+                            }
                           },
-                          child: state is RoomDeatailsSubmittingLoadingState ? const CircularProgressIndicator.adaptive() :  Text(
-                            'Submit',
-                            style: Styles().elevatedButtonTextStyle(context),
-                          )),
+                          child: state is RoomDeatailsSubmittingLoadingState
+                              ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                              : Text(
+                                  'Submit',
+                                  style:
+                                      Styles().elevatedButtonTextStyle(context),
+                                )),
                     ),
                   ],
                 ),
               );
             },
             listener: (context, state) {
-              // if(state is MainPropertyUpdatedState){
-              //   Navigator.of(context).pop();
-              // }
+              if (state is RoomNumberFailedState ||
+                  state is RoomNumberSuccessState) {
+                roomIdKey.currentState!.validate();
+              }
+              else if(state is RoomDeatailsSubmittedState){
+                Navigator.of(context).pop();
+              }
             },
           ),
         ),

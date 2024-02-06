@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:share_sub_admin/application/room_property_bloc/room_property_bloc.dart';
 import 'package:share_sub_admin/domain/enum/hotel_type.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
 import 'package:share_sub_admin/domain/model/room_model.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_adding_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_edit_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_page.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
@@ -112,8 +117,8 @@ class CommonWidget {
                   children: [
                     Expanded(
                       child: Padding(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         child: Text(
                           propertyModel.propertyNmae,
                           style: Theme.of(context).textTheme.titleLarge,
@@ -128,12 +133,13 @@ class CommonWidget {
                     //       ),
                     //       DropdownMenuItem(child: Text('asdf'),)
                     //     ], onChanged: (value) {
-                          
+
                     //     },))
                   ],
                 ),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     child: Row(
                       children: [
                         const Icon(Icons.location_on, size: 18),
@@ -144,7 +150,8 @@ class CommonWidget {
                       ],
                     )),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     child: Row(
                       children: [
                         const Icon(
@@ -163,7 +170,8 @@ class CommonWidget {
                       ],
                     )),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     child: Row(
                       children: [
                         const Icon(Icons.bed, size: 18),
@@ -183,12 +191,19 @@ class CommonWidget {
             ),
           ),
           Positioned(
-            bottom: 0,
-            right: 0,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 15),
-              child: IconButton(onPressed: (){}, icon: Icon(Icons.more_vert_rounded,size: 30,),),
-            ))
+              bottom: 0,
+              right: 0,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.more_vert_rounded,
+                    size: 30,
+                  ),
+                ),
+              ))
         ],
       ),
     );
@@ -242,7 +257,18 @@ class CommonWidget {
                     children: [
                       ElevatedButton(
                           style: Styles().editElevatedButtonStyle(),
-                          onPressed: () {},
+                          onPressed: () {
+                            BlocProvider.of<RoomPropertyBloc>(context).features=roomModel.features;
+                            BlocProvider.of<RoomPropertyBloc>(context).numberOfBed=roomModel.numberOfBed;
+                            BlocProvider.of<RoomPropertyBloc>(context).roomNumber=roomModel.roomNumber;
+                            BlocProvider.of<RoomPropertyBloc>(context).price=roomModel.price;
+                            // BlocProvider.of<RoomPropertyBloc>(context).image=roomModel.images as List<XFile>;
+                            Navigator.of(context).push(MaterialPageRoute(builder: (ctx){
+                              return  BlocProvider.value(
+                                value: BlocProvider.of<RoomPropertyBloc>(context),
+                                child: RoomAddingPage());
+                            }));
+                          },
                           child: Text(
                             'Edit',
                             style: Theme.of(context).textTheme.titleSmall,

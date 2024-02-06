@@ -290,7 +290,7 @@ class PropertyAddingPage extends StatelessWidget {
                           child: ElevatedButton(
                               style: Styles().elevatedButtonStyle(),
                               onPressed: () async {
-                                formKey.currentState!.validate();
+                                if(formKey.currentState!.validate()){
                                 if (context
                                         .read<MainPropertyBloc>()
                                         .hotelType ==
@@ -321,6 +321,10 @@ class PropertyAddingPage extends StatelessWidget {
                                   );
                                 } else {
                                   CommonWidget().errorSnackBar(
+                                      'pleas fill all fields', context);
+                                }
+                                }else{
+                                   CommonWidget().errorSnackBar(
                                       'pleas fill all fields', context);
                                 }
                               },
