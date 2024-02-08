@@ -14,7 +14,7 @@ import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 
 class SubAdminMainPage extends StatelessWidget {
   final String userId;
-  SubAdminMainPage({required this.userId,super.key});
+  SubAdminMainPage({required this.userId, super.key});
 
   List<Widget> screens = const [
     SubAdminHomePage(),
@@ -25,18 +25,24 @@ class SubAdminMainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<SubAdminLoginBloc>().userId=userId;
+    context.read<SubAdminLoginBloc>().userId = userId;
+    var key=GlobalKey<ScaffoldState>();
     return BlocProvider(
       create: (context) => SubAdminMainPageBloc(),
       child: BlocConsumer<SubAdminMainPageBloc, SubAdminMainPageState>(
         builder: (context, state) {
           return SafeArea(
             child: Scaffold(
+              key: key,
               appBar: AppBar(
-                leading: const Icon(
-                  Icons.menu_outlined,
-                  size: 30,
-                ),
+                leading: IconButton(
+                    onPressed: () {
+                      key.currentState!.openDrawer();
+                    },
+                    icon: const Icon(
+                      Icons.menu_outlined,
+                      size: 30,
+                    )),
                 actions: const [
                   Padding(
                     padding: EdgeInsets.all(12.0),
@@ -48,6 +54,7 @@ class SubAdminMainPage extends StatelessWidget {
                 ],
               ),
               body: screens[context.watch<SubAdminMainPageBloc>().index],
+              drawer:CommonWidget().drawerReturnFunction(context),
               bottomNavigationBar: MotionTabBar(
                 initialSelectedTab: 'Home',
                 tabBarColor: MediaQuery.of(context).platformBrightness ==
@@ -66,9 +73,20 @@ class SubAdminMainPage extends StatelessWidget {
                   BlocProvider.of<SubAdminMainPageBloc>(context)
                       .add(NavBarClickingSubAdminMainPage(index: value));
                 },
-                tabIconColor: ConstColors().mainColorpurple,
-                tabSelectedColor: ConstColors().mainColorpurple,
+                tabIconColor: MediaQuery.of(context).platformBrightness ==
+                        Brightness.light
+                    ? Colors.black
+                    : Colors.white,
+                tabSelectedColor: MediaQuery.of(context).platformBrightness ==
+                        Brightness.light
+                    ? Colors.black
+                    : Colors.white,
                 tabIconSize: 30,
+                tabIconSelectedColor:
+                    MediaQuery.of(context).platformBrightness ==
+                            Brightness.light
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 0, 0, 0),
               ),
             ),
           );

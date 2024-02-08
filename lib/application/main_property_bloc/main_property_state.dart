@@ -6,3 +6,6 @@ class MainPropertylocationFixedState extends MainPropertyState{}
 // class MainPropertyImageSelectedState extends MainPropertyState{}
 class MainPropertyLoadingState extends MainPropertyState{}
 class MainPropertyUpdatedState extends MainPropertyState{}
+class ImageAddedState extends MainPropertyState{}
+class ImageAddingState extends MainPropertyState{}
+class CatagoryAddedState extends MainPropertyState{}

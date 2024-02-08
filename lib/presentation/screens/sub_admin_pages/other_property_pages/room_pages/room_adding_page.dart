@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'dart:io';
 
@@ -10,6 +11,7 @@ import 'package:share_sub_admin/application/room_property_bloc/room_property_blo
 import 'package:share_sub_admin/application/room_property_bloc/room_property_event.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_state.dart';
 import 'package:share_sub_admin/domain/enum/hotel_type.dart';
+import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
 import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
@@ -214,6 +216,61 @@ class RoomAddingPage extends StatelessWidget {
                               ),
                             ),
                           ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            'Features',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          )),
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(
+                            children: [
+                              Checkbox(
+                                value:
+                                    BlocProvider.of<RoomPropertyBloc>(context).ac,
+                                onChanged: (value) {
+                                  if (value == true) {
+                                    BlocProvider.of<RoomPropertyBloc>(context)
+                                        .add(OnFeatureAddingEvent(text: 'AC'));
+                                  } else {
+                                    BlocProvider.of<RoomPropertyBloc>(context)
+                                        .add(OnFeatureDeletedEvent(text: 'AC'));
+                                  }
+                                },
+                              ),
+                              const Text('AC')
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(
+                            children: [
+                              Checkbox(
+                                value:
+                                    BlocProvider.of<RoomPropertyBloc>(context).wifi,
+                                onChanged: (value) {
+                                  if (value == true) {
+                                    BlocProvider.of<RoomPropertyBloc>(context)
+                                        .add(OnFeatureAddingEvent(text: 'Wifi'));
+                                  } else {
+                                    BlocProvider.of<RoomPropertyBloc>(context)
+                                        .add(OnFeatureDeletedEvent(text: 'Wifi'));
+                                  }
+                                },
+                              ),
+                              const Text('Wifi')
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                     Row(
                       children: [
                         Padding(
@@ -225,12 +282,11 @@ class RoomAddingPage extends StatelessWidget {
                             child: SizedBox(
                               width: MediaQuery.of(context).size.width * 0.7,
                               child: TextFormField(
-                                // readOnly:featuresController true,
                                 controller: featuresController,
                                 decoration: Styles().formDecorationStyle(
                                     icon: const Icon(
                                         Icons.featured_video_rounded),
-                                    labelText: 'Features'),
+                                    labelText: 'Add more features'),
                                 style: Styles().formTextStyle(context),
                               ),
                             ),
@@ -290,6 +346,21 @@ class RoomAddingPage extends StatelessWidget {
                                             Color.fromARGB(0, 255, 193, 7)),
                                     label: TextButton.icon(
                                         onPressed: () {
+                                          if (BlocProvider.of<RoomPropertyBloc>(
+                                                      context)
+                                                  .features[index] ==
+                                              'AC') {
+                                            BlocProvider.of<RoomPropertyBloc>(
+                                                    context)
+                                                .ac = false;
+                                          } else if (BlocProvider.of<
+                                                      RoomPropertyBloc>(context)
+                                                  .features[index] ==
+                                              'Wifi') {
+                                            BlocProvider.of<RoomPropertyBloc>(
+                                                    context)
+                                                .wifi = false;
+                                          }
                                           BlocProvider.of<RoomPropertyBloc>(
                                                   context)
                                               .add(OnFeatureDeletedEvent(
@@ -338,8 +409,7 @@ class RoomAddingPage extends StatelessWidget {
                                       )
                                     : Image.file(File(context
                                         .watch<RoomPropertyBloc>()
-                                        .image[index]
-                                        .path)),
+                                        .image[index])),
                           );
                         }),
                       ),
@@ -373,7 +443,7 @@ class RoomAddingPage extends StatelessWidget {
                               if (BlocProvider.of<RoomPropertyBloc>(context)
                                       .numberOfBed ==
                                   null) {
-                                CommonWidget().errorSnackBar(
+                                SnackBars().errorSnackBar(
                                     'Pleas enter valid Deatailes about bed',
                                     context);
                                 return;
@@ -381,7 +451,7 @@ class RoomAddingPage extends StatelessWidget {
                                       context)
                                   .features
                                   .isEmpty) {
-                                CommonWidget().errorSnackBar(
+                                SnackBars().errorSnackBar(
                                     'Pleas enter atleast one feature about this room',
                                     context);
                                 return;
@@ -389,7 +459,7 @@ class RoomAddingPage extends StatelessWidget {
                                       context)
                                   .image
                                   .isEmpty) {
-                                CommonWidget().errorSnackBar(
+                                SnackBars().errorSnackBar(
                                     'Pleas enter atleast one image o this room',
                                     context);
                                 return;
@@ -402,20 +472,21 @@ class RoomAddingPage extends StatelessWidget {
                                 ),
                               );
                             } else {
-                              CommonWidget().errorSnackBar(
+                              SnackBars().errorSnackBar(
                                   'Please fill all fielda', context);
                             }
                           },
                           child: state is RoomDeatailsSubmittingLoadingState
                               ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
+                                  color: Colors.white,
+                                )
                               : Text(
                                   'Submit',
                                   style:
                                       Styles().elevatedButtonTextStyle(context),
                                 )),
                     ),
+                     SizedBox(height: MediaQuery.of(context).size.height*0.02,)
                   ],
                 ),
               );
@@ -424,9 +495,15 @@ class RoomAddingPage extends StatelessWidget {
               if (state is RoomNumberFailedState ||
                   state is RoomNumberSuccessState) {
                 roomIdKey.currentState!.validate();
-              }
-              else if(state is RoomDeatailsSubmittedState){
+              } else if (state is RoomDeatailsSubmittedState) {
+                SnackBars().successSnackBar('Room added succesfully', context);
                 Navigator.of(context).pop();
+              } else if (state is FeatureAddedState) {
+                SnackBars().successSnackBar('Feature added', context);
+              } else if (state is FeatureAlreadyExistState) {
+                SnackBars().errorSnackBar('Feature alredy exist', context);
+              } else if (state is FeatureDeletedState) {
+                SnackBars().successSnackBar('Feature deleted', context);
               }
             },
           ),

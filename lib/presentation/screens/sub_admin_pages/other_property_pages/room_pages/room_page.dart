@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_bloc.dart';
+import 'package:share_sub_admin/application/room_property_bloc/room_property_event.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_state.dart';
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
@@ -78,14 +79,19 @@ class RoomShowingPage extends StatelessWidget {
                                                       as Map<String, dynamic>;
                                               return CommonWidget()
                                                   .roomShowingOnPropertyContainer(
-                                                      context, roomDeatails);
+                                                      context,
+                                                      roomDeatails,
+                                                      hotelDeatails[
+                                                              FirebaseFirestoreConst
+                                                                  .firebaseFireStoreRooms]
+                                                          [index]);
                                             }
                                             return const CircularProgressIndicator();
                                           },
                                         );
                                       }),
                                     )
-                                  : const SizedBox();
+                                  : const Text('No room added');
                             } else {
                               return const Text('No data');
                             }
@@ -102,6 +108,8 @@ class RoomShowingPage extends StatelessWidget {
                         child: ElevatedButton(
                             style: Styles().elevatedButtonBorderOnlyStyle(),
                             onPressed: () {
+                              BlocProvider.of<RoomPropertyBloc>(context)
+                                  .add(CleanExistingDataFromRommBlocEvent());
                               Navigator.of(context)
                                   .push(MaterialPageRoute(builder: (ctx) {
                                 return BlocProvider.value(

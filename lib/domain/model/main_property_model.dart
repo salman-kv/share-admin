@@ -27,7 +27,7 @@ class MainPropertyModel {
       FirebaseFirestoreConst.firebaseFireStoreHotelType: '$hotelType',
       FirebaseFirestoreConst.firebaseFireStoreHotelLatLng: {
         'latitude': latLng.latitude,
-        'longitude': latLng.latitude
+        'longitude': latLng.longitude
       },
       FirebaseFirestoreConst.firebaseFireStoreHotelImages: image
     };

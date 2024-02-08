@@ -4,14 +4,16 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
+import 'package:share_sub_admin/domain/functions/shared_prefrence.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
 import 'package:share_sub_admin/domain/model/room_model.dart';
 import 'package:share_sub_admin/domain/model/sub_admin_model.dart';
-import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
+import 'package:share_sub_admin/presentation/alerts/toasts.dart';
 
 class SubAdminFunction {
   // -----------------------------------------------------------------------------------------------------------
@@ -32,6 +34,13 @@ class SubAdminFunction {
         .collection(FirebaseFirestoreConst.firebaseFireStoreHotelCollection);
     final result = await instant.add(mainPropertyModel.toMap());
     return result.id;
+  }
+
+  addEditedSubAdminHotelDeatails(
+      MainPropertyModel mainPropertyModel, String hotelId) async {
+    final instant = FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreHotelCollection);
+    await instant.doc(hotelId).update(mainPropertyModel.toMap());
   }
 
   addHotelIdToSubAdminDocument(String userId, String hotelId) async {
@@ -79,6 +88,15 @@ class SubAdminFunction {
     return result.id;
   }
 
+  addSubAdminEditedRoomDeatails(RoomModel roomModel, String roomId) async {
+    final instant = FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+        .doc(roomId)
+        .update(RoomModel.toMap(roomModel));
+    //  await instant.add(RoomModel.toMap(roomModel));
+    // return result.id;
+  }
+
   addRoomlIdToHotelDocument(String hotelId, String roomId) async {
     log('hotelid');
     log(hotelId);
@@ -124,7 +142,10 @@ class SubAdminFunction {
   subAdminPickMultipleImage() async {
     try {
       List<XFile> listOfImage = await ImagePicker().pickMultiImage();
-      return listOfImage;
+      List<String> listOfStringImage = listOfImage.map((e) {
+        return e.path;
+      }).toList();
+      return listOfStringImage;
     } catch (e) {
       log('$e');
     }
@@ -141,13 +162,13 @@ class SubAdminFunction {
 
   // store image in to image path in firebase and send back the download url as image url for a list of image
 
-  uploadListImageToFirebase(List<XFile> xfile) async {
+  uploadListImageToFirebase(List<dynamic> listImage) async {
     List<String> image = [];
-    for (XFile i in xfile) {
+    for (String i in listImage) {
       final ref = FirebaseStorage.instance
           .ref(FirebaseFirestoreConst.firebaseFireStoreImages)
-          .child(i.name);
-      await ref.putFile(File(i.path));
+          .child(i);
+      await ref.putFile(File(i));
       final imgeUrl = await ref.getDownloadURL();
       image.add(imgeUrl);
     }
@@ -190,7 +211,7 @@ class SubAdminFunction {
         return false;
       }
     } catch (e) {
-      CommonWidget().toastWidget('$e');
+      Toasts().toastWidget('$e');
     }
   }
 
@@ -236,5 +257,67 @@ class SubAdminFunction {
     }
     var currentPostion = await Geolocator.getCurrentPosition();
     return currentPostion;
+  }
+
+  // delete a room from a hotel
+
+  deleteRoomFromHotel({required String hotelId, required String roomId}) async {
+    final instant = await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreHotelCollection)
+        .doc(hotelId)
+        .get();
+    Map<String, dynamic> data = instant.data() as Map<String, dynamic>;
+    List<dynamic> list = data[FirebaseFirestoreConst.firebaseFireStoreRooms];
+    list.remove(roomId);
+    await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreHotelCollection)
+        // ignore: use_build_context_synchronously
+        .doc(hotelId)
+        .update({FirebaseFirestoreConst.firebaseFireStoreRooms: list});
+    await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+        .doc(roomId)
+        .delete();
+  }
+
+  // delete an hotel from a user (also delete all rooms from the hotel)
+
+  deleteHotelFromSubAdmin(
+      {required MainPropertyModel propertyModel,
+      required String hotelId}) async {
+    String userId = await SharedPreferencesClass.getUserId();
+    final instant = await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection)
+        .doc(userId)
+        .get();
+    Map<String, dynamic> data = instant.data() as Map<String, dynamic>;
+    List<dynamic> list = data['hotel'];
+    list.remove(hotelId);
+    await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection)
+        .doc(userId)
+        .update({'hotel': list});
+
+    var hotelInstant = await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreHotelCollection)
+        .doc(hotelId)
+        .get();
+    Map<String, dynamic> hotelData =
+        hotelInstant.data() as Map<String, dynamic>;
+    if (hotelData[FirebaseFirestoreConst.firebaseFireStoreRooms] != null) {
+      List<dynamic> roomList =
+          hotelData[FirebaseFirestoreConst.firebaseFireStoreRooms];
+      for (var i in roomList) {
+        await FirebaseFirestore.instance
+            .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+            .doc(i)
+            .delete();
+      }
+    }
+
+    await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreHotelCollection)
+        .doc(hotelId)
+        .delete();
   }
 }

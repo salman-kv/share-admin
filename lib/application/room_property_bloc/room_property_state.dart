@@ -11,3 +11,4 @@ class RoomDeatailsSubmittedState extends RoomPropertyState{}
 class RoomNumberTypingState extends RoomPropertyState{}
 class RoomNumberSuccessState extends RoomPropertyState{}
 class RoomNumberFailedState extends RoomPropertyState{}
+class FeatureAlreadyExistState extends RoomPropertyState{}

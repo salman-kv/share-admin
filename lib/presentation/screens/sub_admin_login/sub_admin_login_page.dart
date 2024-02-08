@@ -6,6 +6,7 @@ import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login
 import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_signup_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_signup_event.dart';
 import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_signup_state.dart';
+import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/sub_admin_main_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_signup/sub_admin_signup.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_signup/sub_admin_signup_more.dart';
@@ -125,7 +126,7 @@ class SubAdminLogin extends StatelessWidget {
                         }), (route) => false);
                       }
                       if(state is SubAdminLoginErrorState){
-                        CommonWidget().errorSnackBar('Invalid username or password', context);
+                        SnackBars().errorSnackBar('Invalid username or password', context);
                       }
                     },
                   ),

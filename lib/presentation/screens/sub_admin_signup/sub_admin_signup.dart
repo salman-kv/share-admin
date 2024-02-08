@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_signup_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_signup_event.dart';
 import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_signup_state.dart';
+import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_signup/sub_admin_signup_otp.dart';
 import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
@@ -81,10 +82,10 @@ class SubAdminSignUp extends StatelessWidget {
                       }));
                     }
                     else if(state is SubAdminSignupErrorState){
-                      CommonWidget().errorSnackBar('Invalid Email , pls enter a valid email', context);
+                      SnackBars().errorSnackBar('Invalid Email , pls enter a valid email', context);
                     }
                     else if(state is SubAdminAlreadySignupErrorState){
-                      CommonWidget().errorSnackBar('User alredy Logined', context);
+                      SnackBars().errorSnackBar('User alredy Logined', context);
                     }
                   },
                 ),

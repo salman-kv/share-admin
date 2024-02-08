@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_bloc.dart';
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
-import 'package:share_sub_admin/domain/functions/shared_prefrence.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/hotel_property/sub_admin_property_adding_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/hotel_property/property_adding_page.dart';
 import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
@@ -36,7 +35,10 @@ class SubAdminPropertyPage extends StatelessWidget {
               if (snapshot.data != null) {
                 Map<String, dynamic> data =
                     snapshot.data!.data() as Map<String, dynamic>;
-                List<dynamic> hotelList = data['hotel'];
+                List<dynamic>? hotelList = data['hotel'];
+                if(hotelList==null){
+                  return Text('No data found');
+                }
                 return ListView(
                   children: List.generate(hotelList.length, (index) {
                     return StreamBuilder(

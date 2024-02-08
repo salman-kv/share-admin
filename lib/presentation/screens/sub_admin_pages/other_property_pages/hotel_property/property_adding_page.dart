@@ -1,21 +1,25 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:share_sub_admin/application/main_property_bloc/main_property_bloc.dart';
 import 'package:share_sub_admin/application/main_property_bloc/main_property_event.dart';
 import 'package:share_sub_admin/application/main_property_bloc/main_property_state.dart';
-import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
 import 'package:share_sub_admin/domain/enum/hotel_type.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
+import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/location/location_picking_page.dart';
 import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
 class PropertyAddingPage extends StatelessWidget {
-  PropertyAddingPage({super.key});
+  MainPropertyModel? propertyModel;
+  String? hotelId;
+  PropertyAddingPage(
+      {MainPropertyModel? this.propertyModel, String? this.hotelId});
 
   var formKey = GlobalKey<FormState>();
   var nameKey = GlobalKey<FormFieldState>();
@@ -42,6 +46,27 @@ class PropertyAddingPage extends StatelessWidget {
               width: double.infinity,
               child: BlocConsumer<MainPropertyBloc, MainPropertyState>(
                 builder: (context, state) {
+                  if (propertyModel != null &&
+                      state is MainPropertyInitialState) {
+                    BlocProvider.of<MainPropertyBloc>(context).hotelId =
+                        hotelId;
+                    BlocProvider.of<MainPropertyBloc>(context).editing = true;
+                    nameController.text = propertyModel!.propertyNmae;
+                    placController.text = propertyModel!.place;
+                    BlocProvider.of<MainPropertyBloc>(context).hotelType =
+                        propertyModel!.hotelType;
+                    BlocProvider.of<MainPropertyBloc>(context).latLng =
+                        propertyModel!.latLng;
+                    BlocProvider.of<MainPropertyBloc>(context).image =
+                        propertyModel!.image;
+                    BlocProvider.of<MainPropertyBloc>(context).marker.add(
+                          Marker(
+                            markerId: const MarkerId('current position'),
+                            position: LatLng(propertyModel!.latLng.latitude,
+                                propertyModel!.latLng.longitude),
+                          ),
+                        );
+                  }
                   mapLocationController.text =
                       context.watch<MainPropertyBloc>().latLng == null
                           ? ''
@@ -56,10 +81,6 @@ class PropertyAddingPage extends StatelessWidget {
                               "Let's Add details",
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
-                            // Text(
-                            //   'fill the deatailes about the property',
-                            //   style: Theme.of(context).textTheme.bodySmall,
-                            // ),
                           ],
                         ),
                         Padding(
@@ -166,8 +187,6 @@ class PropertyAddingPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        // Row(
-                        //   children: [
                         Row(
                           children: [
                             Padding(
@@ -181,14 +200,6 @@ class PropertyAddingPage extends StatelessWidget {
                                       MediaQuery.of(context).size.width * 0.7,
                                   child: TextFormField(
                                     readOnly: true,
-                                    // validator: (value) {
-                                    //   if ((!RegExp(r'^\S+(?!\d+$)')
-                                    //       .hasMatch(value!))) {
-                                    //     return 'enter valid place';
-                                    //   } else {
-                                    //     return null;
-                                    //   }
-                                    // },
                                     controller: mapLocationController,
                                     decoration: Styles().formDecorationStyle(
                                         icon: const Icon(Icons.map_outlined),
@@ -202,10 +213,9 @@ class PropertyAddingPage extends StatelessWidget {
                               onTap: () async {
                                 Navigator.of(context)
                                     .push(MaterialPageRoute(builder: (ctx) {
-                                  BlocProvider.of<MainPropertyBloc>(context)
-                                      .add(OnCurrentLocationClickEvent());
                                   return BlocProvider.value(
-                                      value: MainPropertyBloc(),
+                                      value: BlocProvider.of<MainPropertyBloc>(
+                                          context),
                                       child: LocationPicking());
                                 }));
                               },
@@ -255,15 +265,13 @@ class PropertyAddingPage extends StatelessWidget {
                                               .displaySmall,
                                         ),
                                       )
-                                    : Image.file(File(context
+                                    : Image.network(context
                                         .watch<MainPropertyBloc>()
-                                        .image[index]
-                                        .path)),
+                                        .image[index]),
                               );
                             }),
                           ),
                         ),
-
                         Container(
                           height: MediaQuery.of(context).size.width * 0.1,
                           constraints: BoxConstraints(
@@ -290,41 +298,41 @@ class PropertyAddingPage extends StatelessWidget {
                           child: ElevatedButton(
                               style: Styles().elevatedButtonStyle(),
                               onPressed: () async {
-                                if(formKey.currentState!.validate()){
-                                if (context
-                                        .read<MainPropertyBloc>()
-                                        .hotelType ==
-                                    null) {
-                                  CommonWidget().errorSnackBar(
-                                      'select catogory', context);
-                                  return;
-                                } else if (context
-                                        .read<MainPropertyBloc>()
-                                        .latLng ==
-                                    null) {
-                                  CommonWidget().errorSnackBar(
-                                      'select location from map', context);
-                                  return;
-                                } else if (context
-                                    .read<MainPropertyBloc>()
-                                    .image
-                                    .isEmpty) {
-                                  CommonWidget()
-                                      .errorSnackBar('select image', context);
-                                  return;
-                                } else if (formKey.currentState!.validate()) {
-                                  BlocProvider.of<MainPropertyBloc>(context)
-                                      .add(
-                                    OnSubmittingDeatailsEvent(
-                                        name: nameController.text,
-                                        place: placController.text),
-                                  );
+                                if (formKey.currentState!.validate()) {
+                                  if (context
+                                          .read<MainPropertyBloc>()
+                                          .hotelType ==
+                                      null) {
+                                    SnackBars().errorSnackBar(
+                                        'select catogory', context);
+                                    return;
+                                  } else if (context
+                                          .read<MainPropertyBloc>()
+                                          .latLng ==
+                                      null) {
+                                    SnackBars().errorSnackBar(
+                                        'select location from map', context);
+                                    return;
+                                  } else if (context
+                                      .read<MainPropertyBloc>()
+                                      .image
+                                      .isEmpty) {
+                                    SnackBars()
+                                        .errorSnackBar('select image', context);
+                                    return;
+                                  } else if (formKey.currentState!.validate()) {
+                                    BlocProvider.of<MainPropertyBloc>(context)
+                                        .add(
+                                      OnSubmittingDeatailsEvent(
+                                          name: nameController.text,
+                                          place: placController.text),
+                                    );
+                                  } else {
+                                    SnackBars().errorSnackBar(
+                                        'pleas fill all fields', context);
+                                  }
                                 } else {
-                                  CommonWidget().errorSnackBar(
-                                      'pleas fill all fields', context);
-                                }
-                                }else{
-                                   CommonWidget().errorSnackBar(
+                                  SnackBars().errorSnackBar(
                                       'pleas fill all fields', context);
                                 }
                               },
@@ -347,7 +355,12 @@ class PropertyAddingPage extends StatelessWidget {
                 },
                 listener: (context, state) {
                   if (state is MainPropertyUpdatedState) {
+                    SnackBars().successSnackBar('Property Added Successfully', context);
                     Navigator.of(context).pop();
+                  } else if (state is ImageAddingState) {
+                    SnackBars().notifyingSnackBar('image is loading', context);
+                  } else if (state is ImageAddedState) {
+                    SnackBars().successSnackBar('image added', context);
                   }
                 },
               ),

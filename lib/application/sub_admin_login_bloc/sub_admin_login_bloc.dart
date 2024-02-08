@@ -5,7 +5,7 @@ import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login
 import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_state.dart';
 import 'package:share_sub_admin/domain/functions/shared_prefrence.dart';
 import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
-import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
+import 'package:share_sub_admin/presentation/alerts/toasts.dart';
 
 class SubAdminLoginBloc extends Bloc<SubAdminLoginEvent, SubAdminLoginState> {
   String? userCredential;
@@ -31,7 +31,7 @@ class SubAdminLoginBloc extends Bloc<SubAdminLoginEvent, SubAdminLoginState> {
           emit(SubAdminLoginErrorState());
         }
       } catch (e) {
-        CommonWidget().toastWidget('$e');
+        Toasts().toastWidget('$e');
       }
     });
   }

@@ -8,30 +8,58 @@ import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
 import 'package:share_sub_admin/domain/model/room_model.dart';
+import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 
 class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
   MainPropertyModel? propertyModel;
   String? hotelId;
   List<dynamic> features = [];
-  List<XFile> image = [];
+  List<String> image = [];
+  List<dynamic> editImage = [];
   int? numberOfBed;
   String? roomNumber;
+  String? staticEditRoomNumber;
   int? price;
+  bool ac = false;
+  bool wifi = false;
   RoomPropertyBloc() : super(RoomPropertyBlocInitial()) {
     on<OnSettingHotelIdEvent>((event, emit) {
       hotelId = event.hotelId;
     });
     on<OnFeatureAddingEvent>((event, emit) {
-      features.add(event.text);
-      emit(FeatureAddedState());
+      if (features.contains(event.text)) {
+        emit(FeatureAlreadyExistState());
+      } else {
+        features.add(event.text);
+        if (event.text == 'AC') {
+          ac = true;
+        }
+        if (event.text == 'Wifi') {
+          wifi = true;
+        }
+        emit(FeatureAddedState());
+      }
     });
     on<OnFeatureDeletedEvent>((event, emit) {
       features.remove(event.text);
+      if (event.text == 'AC') {
+          ac = false;
+        }
+        if (event.text == 'Wifi') {
+          wifi = false;
+        }
       emit(FeatureDeletedState());
     });
     on<OnClickToAddMultipleImageEvent>((event, emit) async {
       var nweImage = await SubAdminFunction().subAdminPickMultipleImage();
       image.addAll(nweImage);
+      emit(MultipleImageAddedState());
+    });
+    on<OnClickEditToAddMultipleImageEvent>((event, emit) async {
+      var nweImage = await SubAdminFunction().subAdminPickMultipleImage();
+      List<String> listOfImage =
+          await SubAdminFunction().uploadListImageToFirebase(nweImage);
+      editImage.addAll(listOfImage);
       emit(MultipleImageAddedState());
     });
     on<OnBedSelectEvent>((event, emit) {
@@ -56,6 +84,21 @@ class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
       SubAdminFunction().addRoomlIdToHotelDocument(hotelId!, roomId);
       emit(RoomDeatailsSubmittedState());
     });
+    on<OnAddEditedRoomDeatailsEvent>((event, emit) async {
+      emit(RoomDeatailsSubmittingLoadingState());
+      final RoomModel roomModel = RoomModel(
+          hotelId: hotelId!,
+          hotelName: propertyModel!.propertyNmae,
+          roomNumber: event.roomNumber,
+          price: event.price,
+          numberOfBed: numberOfBed!,
+          features: features,
+          images: editImage,
+          availability: true);
+      await SubAdminFunction()
+          .addSubAdminEditedRoomDeatails(roomModel, event.roomId);
+      emit(RoomDeatailsSubmittedState());
+    });
     on<RoomNumberTypingEvent>((event, emit) async {
       emit(RoomNumberTypingState());
       final instant = await FirebaseFirestore.instance
@@ -66,12 +109,41 @@ class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
               isEqualTo: event.roomNumber)
           .get();
       if (instant.docs.isEmpty) {
-        roomNumber=event.roomNumber;
+        roomNumber = event.roomNumber;
         emit(RoomNumberSuccessState());
       } else {
-        roomNumber=null;
+        roomNumber = null;
         emit(RoomNumberFailedState());
       }
+    });
+    on<EditingRoomNumberTypingEvent>((event, emit) async {
+      emit(RoomNumberTypingState());
+      if (event.roomNumber != event.staticRoomId) {
+        final instant = await FirebaseFirestore.instance
+            .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+            .where(FirebaseFirestoreConst.firebaseFireStoreHotelId,
+                isEqualTo: event.hotelId)
+            .where(FirebaseFirestoreConst.firebaseFireStoreRoomNumber,
+                isEqualTo: event.roomNumber)
+            .get();
+        if (instant.docs.isEmpty) {
+          roomNumber = event.roomNumber;
+          emit(RoomNumberSuccessState());
+        } else {
+          roomNumber = null;
+          emit(RoomNumberFailedState());
+        }
+      } else {
+        log('same room number');
+        emit(RoomNumberSuccessState());
+      }
+    });
+    on<CleanExistingDataFromRommBlocEvent>((event, emit) {
+      features=[];
+      numberOfBed=null;
+      ac=false;
+      wifi=false;
+      image=[];
     });
   }
 }

@@ -1,0 +1,84 @@
+import 'dart:developer';
+
+import 'package:flutter/material.dart';
+import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
+import 'package:share_sub_admin/domain/model/main_property_model.dart';
+import 'package:share_sub_admin/domain/model/room_model.dart';
+import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
+
+class Alerts {
+  dialgForDelete(
+      {required BuildContext context,
+      String? hotelId,
+      String? roomId,
+      MainPropertyModel? propertyModel,
+      required String type,
+      RoomModel? roomModel}) {
+    return showDialog(
+        context: context,
+        builder: (ctx) {
+          String? dialog;
+          if (roomModel != null) {
+            dialog =
+                'Do you want to remove ${roomModel.roomNumber} room from ${roomModel.hotelName}';
+          } else if (propertyModel != null) {
+            dialog = 
+                'Do you want to remove  " ${propertyModel.propertyNmae} "  this property';
+          }
+          return AlertDialog(
+            backgroundColor: const Color.fromARGB(255, 238, 237, 235),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            title: Column(
+              children: [
+                const Icon(
+                  Icons.warning,
+                  color: Color.fromARGB(255, 244, 67, 54),
+                  size: 29,
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Text(
+                  dialog.toString(),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.displayMedium,
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'No',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(color: Colors.red),
+                  )),
+              TextButton(
+                  onPressed: () async {
+                    if (type == 'roomDelete') {
+                      SubAdminFunction().deleteRoomFromHotel(
+                          hotelId: hotelId!, roomId: roomId!);
+                    } else if (type == 'hotelDelete') {
+                      SubAdminFunction().deleteHotelFromSubAdmin(
+                          propertyModel: propertyModel!, hotelId: hotelId!);
+                    }
+                    SnackBars().successSnackBar('Property deleted successfully', context);
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'Yes',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(color: Colors.green),
+                  )),
+            ],
+          );
+        });
+  }
+}

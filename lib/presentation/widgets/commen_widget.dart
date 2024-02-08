@@ -1,45 +1,28 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_bloc.dart';
+import 'package:share_sub_admin/application/room_property_bloc/room_property_event.dart';
+import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/enum/hotel_type.dart';
+import 'package:share_sub_admin/domain/functions/shared_prefrence.dart';
+import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
 import 'package:share_sub_admin/domain/model/room_model.dart';
+import 'package:share_sub_admin/presentation/alerts/alert.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/hotel_property/property_adding_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_adding_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_edit_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_page.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 class CommonWidget {
-  toastWidget(String toastMessage) {
-    return Fluttertoast.showToast(
-        msg: toastMessage,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
-  }
-
-  errorSnackBar(String errorSnackBarMessage, BuildContext context) {
-    return ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        margin: const EdgeInsets.all(20),
-        behavior: SnackBarBehavior.floating,
-        padding: const EdgeInsets.all(10),
-        duration: const Duration(seconds: 1),
-        backgroundColor: Colors.red,
-        content: Text(
-          errorSnackBarMessage,
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-    );
-  }
-
 // room status details showing on subadmins home
 
   roomStatusShowingContainer(BuildContext context) {
@@ -99,8 +82,17 @@ class CommonWidget {
           Container(
             margin: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: ConstColors().mainColorpurple.withOpacity(0.3)),
+              borderRadius: BorderRadius.circular(15),
+              color: ConstColors().mainColorpurple.withOpacity(0.3),
+              // gradient: LinearGradient(
+              //   begin: Alignment.bottomLeft,
+              //   end: Alignment.bottomRight,
+              //   colors: [
+
+              //   ConstColors().mainColorpurple.withOpacity(0.5),
+              //   ConstColors().main2Colorpur.withOpacity(0.4),
+              // ]),
+            ),
             constraints: const BoxConstraints(minHeight: 300),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,16 +117,6 @@ class CommonWidget {
                         ),
                       ),
                     ),
-                    // Padding(
-                    //     padding: const EdgeInsets.all(8.0),
-                    //     child: DropdownButton(items: [
-                    //       DropdownMenuItem(
-                    //         child: Text('haai'),
-                    //       ),
-                    //       DropdownMenuItem(child: Text('asdf'),)
-                    //     ], onChanged: (value) {
-
-                    //     },))
                   ],
                 ),
                 Padding(
@@ -194,16 +176,44 @@ class CommonWidget {
               bottom: 0,
               right: 0,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                child: IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.more_vert_rounded,
-                    size: 30,
-                  ),
-                ),
-              ))
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                  child: PopupMenuButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    iconSize: 30,
+                    itemBuilder: (context) {
+                      return [
+                        PopupMenuItem(
+                            onTap: () {
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: (ctx) {
+                                return PropertyAddingPage(
+                                  hotelId: hotelId,
+                                  propertyModel: propertyModel,
+                                );
+                              }));
+                            },
+                            child: Text(
+                              'Edit',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            )),
+                        PopupMenuItem(
+                            onTap: () {
+                              // SubAdminFunction().deleteHotelFromSubAdmin(propertyModel: propertyModel, hotelId: hotelId);
+                              Alerts().dialgForDelete(
+                                  context: context,
+                                  type: 'hotelDelete',
+                                  hotelId: hotelId,
+                                  propertyModel: propertyModel);
+                            },
+                            child: Text(
+                              'Delete',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            )),
+                      ];
+                    },
+                  )))
         ],
       ),
     );
@@ -212,12 +222,16 @@ class CommonWidget {
   // // room details container inside hotel container
 
   roomShowingOnPropertyContainer(
-      BuildContext context, Map<String, dynamic> data) {
+      BuildContext context, Map<String, dynamic> data, String roomId) {
     RoomModel roomModel = RoomModel.fromMap(data);
     return Container(
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-          color: ConstColors().mainColorpurple.withOpacity(0.3),
+          // color: ConstColors().mainColorpurple.withOpacity(0.2),
+          gradient: LinearGradient(colors: [
+            ConstColors().mainColorpurple.withOpacity(0.4),
+            ConstColors().main2Colorpur.withOpacity(0.2),
+          ]),
           borderRadius: const BorderRadius.all(Radius.circular(20))),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -258,15 +272,36 @@ class CommonWidget {
                       ElevatedButton(
                           style: Styles().editElevatedButtonStyle(),
                           onPressed: () {
-                            BlocProvider.of<RoomPropertyBloc>(context).features=roomModel.features;
-                            BlocProvider.of<RoomPropertyBloc>(context).numberOfBed=roomModel.numberOfBed;
-                            BlocProvider.of<RoomPropertyBloc>(context).roomNumber=roomModel.roomNumber;
-                            BlocProvider.of<RoomPropertyBloc>(context).price=roomModel.price;
+                            BlocProvider.of<RoomPropertyBloc>(context)
+                                .features = roomModel.features;
+                            BlocProvider.of<RoomPropertyBloc>(context)
+                                .numberOfBed = roomModel.numberOfBed;
+                            BlocProvider.of<RoomPropertyBloc>(context)
+                                .roomNumber = roomModel.roomNumber;
+                            BlocProvider.of<RoomPropertyBloc>(context).price =
+                                roomModel.price;
+                            BlocProvider.of<RoomPropertyBloc>(context)
+                                .editImage = roomModel.images;
+                            BlocProvider.of<RoomPropertyBloc>(context)
+                                .staticEditRoomNumber = roomModel.roomNumber;
+                            if (roomModel.features.contains('AC')) {
+                              BlocProvider.of<RoomPropertyBloc>(context).ac =
+                                  true;
+                            }
+                            if (roomModel.features.contains('Wifi')) {
+                              BlocProvider.of<RoomPropertyBloc>(context).wifi =
+                                  true;
+                            }
+
                             // BlocProvider.of<RoomPropertyBloc>(context).image=roomModel.images as List<XFile>;
-                            Navigator.of(context).push(MaterialPageRoute(builder: (ctx){
-                              return  BlocProvider.value(
-                                value: BlocProvider.of<RoomPropertyBloc>(context),
-                                child: RoomAddingPage());
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (ctx) {
+                              return BlocProvider.value(
+                                  value: BlocProvider.of<RoomPropertyBloc>(
+                                      context),
+                                  child: RoomEditPage(
+                                    roomId: roomId,
+                                  ));
                             }));
                           },
                           child: Text(
@@ -275,7 +310,16 @@ class CommonWidget {
                           )),
                       ElevatedButton(
                           style: Styles().deleteElevatedButtonStyle(),
-                          onPressed: () {},
+                          onPressed: () async {
+                            Alerts().dialgForDelete(
+                                context: context,
+                                hotelId:
+                                    BlocProvider.of<RoomPropertyBloc>(context)
+                                        .hotelId!,
+                                roomId: roomId,
+                                type: 'roomDelete',
+                                roomModel: roomModel);
+                          },
                           child: Text(
                             'Delete',
                             style: Theme.of(context).textTheme.labelSmall,
@@ -321,6 +365,94 @@ class CommonWidget {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 15),
             child: Icon(Icons.arrow_forward_ios),
+          )
+        ],
+      ),
+    );
+  }
+
+  // checked box
+
+  checkedBoxForRoomAdding(BuildContext context, String data) {
+    var blocVal;
+    if (data == 'AC') {
+      blocVal = BlocProvider.of<RoomPropertyBloc>(context).ac;
+    } else {
+      blocVal = BlocProvider.of<RoomPropertyBloc>(context).wifi;
+    }
+    return Checkbox(
+      value: blocVal,
+      onChanged: (value) {
+        if (value == true) {
+          BlocProvider.of<RoomPropertyBloc>(context)
+              .add(OnFeatureAddingEvent(text: data));
+          blocVal = true;
+        } else {
+          BlocProvider.of<RoomPropertyBloc>(context)
+              .add(OnFeatureDeletedEvent(text: data));
+          blocVal = false;
+        }
+      },
+    );
+  }
+
+  // drawer
+
+  drawerReturnFunction(BuildContext context) {
+    return Drawer(
+      backgroundColor:
+          MediaQuery.of(context).platformBrightness == Brightness.dark
+              ? const Color.fromARGB(150, 255, 255, 255)
+              : const Color.fromARGB(150, 0, 0, 0),
+      child: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.all(10),
+            height: MediaQuery.of(context).size.width * 0.45,
+            width: MediaQuery.of(context).size.width * 0.45,
+            decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(150),
+                ),
+                image: DecorationImage(
+                    image: AssetImage('assets/images/profile.png')),
+                color: Colors.amber),
+          ),
+          Text(
+            'Name',
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                  child: Text(
+                    'sdfsdf',
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                  child: Text(
+                    'sdfsdf',
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                  child: Text(
+                    'sdfsdf',
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ),
+              ],
+            ),
           )
         ],
       ),

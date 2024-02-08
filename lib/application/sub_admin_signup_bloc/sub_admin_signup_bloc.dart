@@ -7,6 +7,8 @@ import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_sign
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/functions/shared_prefrence.dart';
 import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
+import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
+import 'package:share_sub_admin/presentation/alerts/toasts.dart';
 import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 class SubAdminSignUpBloc extends Bloc<SubAdminSignUpEvent, SubAdminSignUpState> {
   // UserCredential? userCredential;
@@ -40,7 +42,7 @@ class SubAdminSignUpBloc extends Bloc<SubAdminSignUpEvent, SubAdminSignUpState> 
           }
         } catch (e) {
           emit(InitialSubAdminSignUp());
-          CommonWidget().toastWidget('$e');
+          Toasts().toastWidget('$e');
           log('$e');
         }
       },

@@ -31,9 +31,32 @@ class OnAddRoomDeatailsEvent extends RoomPropertyEvent{
   OnAddRoomDeatailsEvent({required this.roomNumber, required this.price});
 
 }
+class OnAddEditedRoomDeatailsEvent extends RoomPropertyEvent{
+  final String roomNumber;
+  final String roomId;
+  final int price;
+
+  OnAddEditedRoomDeatailsEvent({required this.roomNumber, required this.roomId, required this.price});
+
+
+
+}
 class RoomNumberTypingEvent extends RoomPropertyEvent{
   final String roomNumber;
   final String hotelId;
+  
 
   RoomNumberTypingEvent({required this.roomNumber, required this.hotelId});
 }
+class EditingRoomNumberTypingEvent extends RoomPropertyEvent{
+  final String roomNumber;
+  final String hotelId;
+  final String staticRoomId;
+
+  EditingRoomNumberTypingEvent({required this.roomNumber, required this.hotelId, required this.staticRoomId});
+}
+class OnClickEditToAddMultipleImageEvent extends RoomPropertyEvent{
+  
+}
+
+class CleanExistingDataFromRommBlocEvent extends RoomPropertyEvent{}

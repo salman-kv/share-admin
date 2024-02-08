@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_bloc.dart';
@@ -14,6 +15,8 @@ import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_sign
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
 import 'package:share_sub_admin/domain/model/sub_admin_model.dart';
+import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
+import 'package:share_sub_admin/presentation/alerts/toasts.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_signup/sub_admin_signup_success.dart';
 import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
@@ -225,7 +228,7 @@ class SubAdminSignUpMoreInfo extends StatelessWidget {
                                   if (BlocProvider.of<SubAdminSignUpBloc>(context)
                                           .image ==
                                       null) {
-                                    CommonWidget()
+                                    Toasts()
                                         .toastWidget('pls add profile photo');
                                     return;
                                   } else if (formKey.currentState!.validate()) {
