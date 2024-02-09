@@ -1,13 +1,16 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_bloc.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_event.dart';
+import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_bloc.dart';
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/enum/hotel_type.dart';
 import 'package:share_sub_admin/domain/functions/shared_prefrence.dart';
@@ -16,6 +19,7 @@ import 'package:share_sub_admin/domain/model/main_property_model.dart';
 import 'package:share_sub_admin/domain/model/room_model.dart';
 import 'package:share_sub_admin/presentation/alerts/alert.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_login/sub_admin_login_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/hotel_property/property_adding_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_adding_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_edit_page.dart';
@@ -399,6 +403,7 @@ class CommonWidget {
   // drawer
 
   drawerReturnFunction(BuildContext context) {
+    log('${BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.imagePath}');
     return Drawer(
       backgroundColor:
           MediaQuery.of(context).platformBrightness == Brightness.dark
@@ -410,16 +415,16 @@ class CommonWidget {
             margin: const EdgeInsets.all(10),
             height: MediaQuery.of(context).size.width * 0.45,
             width: MediaQuery.of(context).size.width * 0.45,
-            decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(
+            decoration:  BoxDecoration(
+                borderRadius:const BorderRadius.all(
                   Radius.circular(150),
                 ),
                 image: DecorationImage(
-                    image: AssetImage('assets/images/profile.png')),
+                    image: NetworkImage(BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.imagePath)),
                 color: Colors.amber),
           ),
           Text(
-            'Name',
+            BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.name,
             style: Theme.of(context).textTheme.labelLarge,
           ),
           SizedBox(
@@ -427,28 +432,110 @@ class CommonWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-                  child: Text(
-                    'sdfsdf',
-                    style: Theme.of(context).textTheme.labelSmall,
+                InkWell(
+                  onTap: () {},
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.person_2_rounded,
+                          size: 30,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.01,
+                        ),
+                        Text(
+                          'Profile',
+                          style: Theme.of(context).textTheme.labelMedium,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-                  child: Text(
-                    'sdfsdf',
-                    style: Theme.of(context).textTheme.labelSmall,
+                InkWell(
+                  onTap: () {},
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.security_rounded,
+                          size: 30,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.01,
+                        ),
+                        Text(
+                          'Privacy policy',
+                          style: Theme.of(context).textTheme.labelMedium,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-                  child: Text(
-                    'sdfsdf',
-                    style: Theme.of(context).textTheme.labelSmall,
+                InkWell(
+                  onTap: () {},
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.privacy_tip_rounded,
+                          size: 30,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.01,
+                        ),
+                        Text(
+                          'Terms & Condition',
+                          style: Theme.of(context).textTheme.labelMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                   Alerts().dialgForDelete(context: context, type: 'logOut');
+                  },
+                  child: Container(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      color: MediaQuery.of(context).platformBrightness ==
+                              Brightness.light
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.logout_outlined,
+                          size: 30,
+                          color: Color.fromARGB(255, 214, 6, 6),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.01,
+                        ),
+                        Text(
+                          'Log Out',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelMedium!
+                              .copyWith(color: Colors.red),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

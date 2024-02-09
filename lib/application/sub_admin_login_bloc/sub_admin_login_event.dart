@@ -20,3 +20,13 @@ class SubAdminLoginSuccessEvent extends SubAdminLoginEvent{
   final String userId;
   SubAdminLoginSuccessEvent({required this.userId});
 }
+class SubAdminDeatailAddingEvent extends SubAdminLoginEvent{
+  final String userId;
+
+  SubAdminDeatailAddingEvent({required this.userId});
+}
+class SubAdminCheckingEvent extends SubAdminLoginEvent{
+  final String? userId;
+
+  SubAdminCheckingEvent({required this.userId});
+}

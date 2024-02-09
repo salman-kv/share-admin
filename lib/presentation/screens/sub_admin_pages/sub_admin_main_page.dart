@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:motion_tab_bar_v2/motion-tab-bar.dart';
 import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_bloc.dart';
+import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_event.dart';
 import 'package:share_sub_admin/application/sub_admin_main_page_bloc/sub_admin_main_page_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_main_page_bloc/sub_admin_main_page_event.dart';
 import 'package:share_sub_admin/application/sub_admin_main_page_bloc/sub_admin_main_page_state.dart';
@@ -13,8 +16,7 @@ import 'package:share_sub_admin/presentation/screens/sub_admin_pages/main%20_pag
 import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 
 class SubAdminMainPage extends StatelessWidget {
-  final String userId;
-  SubAdminMainPage({required this.userId, super.key});
+  SubAdminMainPage({ super.key});
 
   List<Widget> screens = const [
     SubAdminHomePage(),
@@ -25,7 +27,8 @@ class SubAdminMainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<SubAdminLoginBloc>().userId = userId;
+    // context.read<SubAdminLoginBloc>().userId = userId;
+    // log('${BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.name}');
     var key=GlobalKey<ScaffoldState>();
     return BlocProvider(
       create: (context) => SubAdminMainPageBloc(),

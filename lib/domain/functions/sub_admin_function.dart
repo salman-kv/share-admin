@@ -14,6 +14,7 @@ import 'package:share_sub_admin/domain/model/main_property_model.dart';
 import 'package:share_sub_admin/domain/model/room_model.dart';
 import 'package:share_sub_admin/domain/model/sub_admin_model.dart';
 import 'package:share_sub_admin/presentation/alerts/toasts.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_login/sub_admin_login_page.dart';
 
 class SubAdminFunction {
   // -----------------------------------------------------------------------------------------------------------
@@ -319,5 +320,17 @@ class SubAdminFunction {
         .collection(FirebaseFirestoreConst.firebaseFireStoreHotelCollection)
         .doc(hotelId)
         .delete();
+  }
+
+  // log out function
+
+  subAdminLogOut(BuildContext context) async {
+    FirebaseAuth.instance.signOut();
+    GoogleSignIn().signOut();
+    await SharedPreferencesClass.deleteUserid();
+    await SharedPreferencesClass.deleteUserEmail();
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (ctx) {
+      return SubAdminLogin();
+    }), (route) => false);
   }
 }

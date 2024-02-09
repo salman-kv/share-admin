@@ -5,7 +5,6 @@ import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_sign
 import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_signup_state.dart';
 import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_signup/sub_admin_signup_otp.dart';
-import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 class SubAdminSignUp extends StatelessWidget {

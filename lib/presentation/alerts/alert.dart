@@ -22,8 +22,12 @@ class Alerts {
             dialog =
                 'Do you want to remove ${roomModel.roomNumber} room from ${roomModel.hotelName}';
           } else if (propertyModel != null) {
-            dialog = 
+            dialog =
                 'Do you want to remove  " ${propertyModel.propertyNmae} "  this property';
+          
+          } else if (type == 'logOut') {
+            dialog =
+                'Do you want to LogOut';
           }
           return AlertDialog(
             backgroundColor: const Color.fromARGB(255, 238, 237, 235),
@@ -63,12 +67,18 @@ class Alerts {
                     if (type == 'roomDelete') {
                       SubAdminFunction().deleteRoomFromHotel(
                           hotelId: hotelId!, roomId: roomId!);
+                      Navigator.of(context).pop();
+                      SnackBars().successSnackBar(
+                          'Room deleted successfully', context);
                     } else if (type == 'hotelDelete') {
                       SubAdminFunction().deleteHotelFromSubAdmin(
                           propertyModel: propertyModel!, hotelId: hotelId!);
+                      Navigator.of(context).pop();
+                      SnackBars().successSnackBar(
+                          'Property deleted successfully', context);
+                    }else if(type=='logOut'){
+                      SubAdminFunction().subAdminLogOut(context);
                     }
-                    SnackBars().successSnackBar('Property deleted successfully', context);
-                    Navigator.of(context).pop();
                   },
                   child: Text(
                     'Yes',

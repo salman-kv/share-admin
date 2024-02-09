@@ -10,7 +10,6 @@ import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/sub_admin_main_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_signup/sub_admin_signup.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_signup/sub_admin_signup_more.dart';
-import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 class SubAdminLogin extends StatelessWidget {
@@ -55,7 +54,6 @@ class SubAdminLogin extends StatelessWidget {
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(20)),
                             child: TextFormField(
-
                               controller: emailController,
                               decoration: Styles().formDecorationStyle(
                                   icon: const Icon(Icons.mail_outlined),
@@ -122,11 +120,17 @@ class SubAdminLogin extends StatelessWidget {
                       if (state is SubAdminLoginSuccessState) {
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(builder: (ctx) {
-                          return SubAdminMainPage(userId: context.read<SubAdminLoginBloc>().userId!,);
+                          return SubAdminMainPage();
+                          // return SubAdminMainPage(userId: context.read<SubAdminLoginBloc>().userId!,);
                         }), (route) => false);
-                      }
-                      if(state is SubAdminLoginErrorState){
-                        SnackBars().errorSnackBar('Invalid username or password', context);
+                      } else if (state is SubAdminLoginErrorState) {
+                        SnackBars().errorSnackBar(
+                            'Invalid username or password', context);
+                      } else if (state is SubAdminDeatailedAddigPendingState) {
+                        BlocProvider.of<SubAdminLoginBloc>(context).add(
+                            SubAdminDeatailAddingEvent(
+                                userId:
+                                    context.read<SubAdminLoginBloc>().userId!));
                       }
                     },
                   ),
@@ -163,9 +167,8 @@ class SubAdminLogin extends StatelessWidget {
                             children: [
                               InkWell(
                                 onTap: () {
-                                  context
-                                      .read<SubAdminSignUpBloc>()
-                                      .add(OnclickSubAdminSignUpAuthentication());
+                                  context.read<SubAdminSignUpBloc>().add(
+                                      OnclickSubAdminSignUpAuthentication());
                                 },
                                 child: Container(
                                   height: 60,
@@ -203,19 +206,24 @@ class SubAdminLogin extends StatelessWidget {
               );
             },
             listener: (context, state) {
-              if (state is SubAdminAlredySignupState)   {
+              if (state is SubAdminAlredySignupState) {
                 context.read<SubAdminLoginBloc>().add(SubAdminAlredyLoginEvent(
                     userCredential: state.userCredential,
                     userId: state.userId));
-                     
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (ctx)  {
-                  return SubAdminMainPage(userId: context.read<SubAdminLoginBloc>().userId!,);
-                }), (route) => false);
+                BlocProvider.of<SubAdminLoginBloc>(context).add(
+                    SubAdminDeatailAddingEvent(
+                        userId: state.userId));
               } else if (state is SubAdminSignupAuthenticationSuccess) {
-                Navigator.of(context).push(MaterialPageRoute(builder: (ctx){
+                Navigator.of(context).push(MaterialPageRoute(builder: (ctx) {
                   return SubAdminSignUpMoreInfo();
                 }));
+              }
+              else if(state is SubAdminLoginSuccessState){
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (ctx) {
+                  return SubAdminMainPage();
+                  // return SubAdminMainPage(userId: context.read<SubAdminLoginBloc>().userId!,);
+                }), (route) => false);
               }
             },
           ),
