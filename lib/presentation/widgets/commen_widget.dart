@@ -403,7 +403,6 @@ class CommonWidget {
   // drawer
 
   drawerReturnFunction(BuildContext context) {
-    log('${BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.imagePath}');
     return Drawer(
       backgroundColor:
           MediaQuery.of(context).platformBrightness == Brightness.dark
@@ -419,9 +418,10 @@ class CommonWidget {
                 borderRadius:const BorderRadius.all(
                   Radius.circular(150),
                 ),
-                image: DecorationImage(
-                    image: NetworkImage(BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.imagePath)),
-                color: Colors.amber),
+                image: DecorationImage( 
+                    image: NetworkImage(BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.imagePath),fit: BoxFit.cover),
+                ),
+                
           ),
           Text(
             BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.name,

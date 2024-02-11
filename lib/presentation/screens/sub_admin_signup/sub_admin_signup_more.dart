@@ -1,10 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_bloc.dart';
@@ -15,10 +12,8 @@ import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_sign
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
 import 'package:share_sub_admin/domain/model/sub_admin_model.dart';
-import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/alerts/toasts.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_signup/sub_admin_signup_success.dart';
-import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 // ignore: must_be_immutable
@@ -89,46 +84,6 @@ class SubAdminSignUpMoreInfo extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // DropdownButtonHideUnderline(
-                  //   child: DropdownButton2(
-                  //     dropdownStyleData: DropdownStyleData(
-                  //       maxHeight: 300,
-                  //       width: MediaQuery.of(context).size.width * 0.9,
-                  //       decoration: BoxDecoration(
-                  //         borderRadius: BorderRadius.circular(14),
-                  //       ),
-                  //     ),
-                  //     buttonStyleData: ButtonStyleData(
-                  //       height: 55,
-                  //       width: MediaQuery.of(context).size.width * 0.92,
-                  //       padding: const EdgeInsets.only(left: 14, right: 14),
-                  //       decoration: BoxDecoration(
-                  //         borderRadius: BorderRadius.circular(14),
-                  //         color: const Color.fromARGB(255, 242, 242, 242),
-                  //       ),
-                  //     ),
-                  //     onChanged: (value) {},
-                  //     hint: const Row(
-                  //       children: [
-                  //         Icon(Icons.male_outlined),
-                  //         SizedBox(
-                  //           width: 5,
-                  //         ),
-                  //         Text('Gender'),
-                  //       ],
-                  //     ),
-                  //     items: const [
-                  //       DropdownMenuItem(
-                  //         value: 'Male',
-                  //         child: Text('Male'),
-                  //       ),
-                  //       DropdownMenuItem(
-                  //         value: 'Female',
-                  //         child: Text('Female'),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
                   Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -140,12 +95,13 @@ class SubAdminSignUpMoreInfo extends StatelessWidget {
                           phoneKey.currentState!.validate();
                         },
                         validator: (value) {
-                          if ((!RegExp(r'^[0-9]+\.?[0-9]*$').hasMatch(value!))) {
-                            return 'enter valid Phone number';
+                          if ((!RegExp(r'^[0-9]+\.?[0-9]*$').hasMatch(value!) || value.length!=10)) {
+                            return 'enter valid 10 digit phone number';
                           } else {
                             return null;
                           }
                         },
+                        
                         controller: phoneController,
                         decoration: Styles().formDecorationStyle(
                             icon: const Icon(Icons.phone_in_talk_outlined),
@@ -165,11 +121,22 @@ class SubAdminSignUpMoreInfo extends StatelessWidget {
                           passwordKey.currentState!.validate();
                         },
                         validator: (value) {
-                          if ((!RegExp(r'^\S+(?!\d+$)').hasMatch(value!))) {
-                            return 'enter valid password';
-                          } else {
+                          if (value!.length >= 6 && (value.contains(RegExp(r'[!@#$%^&*(),₹_.-]')))) {
                             return null;
                           }
+                           else if(!(value.length >= 6) && !(value.contains(RegExp(r'[!@#$%^&*(),.-]')))){
+                            return 'Add minimum 6 character\nAdd one special character';
+                          }
+                           else if(!(value.length >= 6)) {
+                            return 'Add minimum 6 character';
+                          }
+                          else if(!(value.contains(RegExp(r'[!@#$%^&*(),.-]')))){
+                            return 'Add one special character';
+                          }
+                          else{
+                            return null;
+                          }
+                         
                         },
                         controller: passwordController,
                         obscureText: true,
@@ -190,7 +157,7 @@ class SubAdminSignUpMoreInfo extends StatelessWidget {
                       BlocProvider.of<SubAdminSignUpBloc>(context)
                           .add(OnAddSubAdminSignUpImage(image: tempImage));
                     },
-                    child: const Text('Add Image'),
+                    child:  Text('Add Image',style: Theme.of(context).textTheme.titleSmall,),
                   ),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.02,
@@ -264,7 +231,7 @@ class SubAdminSignUpMoreInfo extends StatelessWidget {
                                     )
                                     : Text(
                                         'Submit',
-                                        style: Theme.of(context).textTheme.displayMedium,
+                                        style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white),
                                       )),
                           ),
                         ],

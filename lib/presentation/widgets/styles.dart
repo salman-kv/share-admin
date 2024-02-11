@@ -104,9 +104,9 @@ class Styles {
 
 
 
-  elevatedButtonBorderOnlyStyle() {
+  elevatedButtonBorderOnlyStyle(BuildContext context) {
     return ElevatedButton.styleFrom(
-        backgroundColor:const Color.fromARGB(255, 26, 24, 24), shadowColor: Colors.transparent);
+        backgroundColor:MediaQuery.of(context).platformBrightness==Brightness.light ? Colors.black : Colors.white);
   }
   // *****************************************************************************************************************************
 

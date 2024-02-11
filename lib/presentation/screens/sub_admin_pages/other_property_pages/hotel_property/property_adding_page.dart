@@ -1,9 +1,8 @@
-import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:lottie/lottie.dart' as lottie;
 import 'package:share_sub_admin/application/main_property_bloc/main_property_bloc.dart';
 import 'package:share_sub_admin/application/main_property_bloc/main_property_event.dart';
 import 'package:share_sub_admin/application/main_property_bloc/main_property_state.dart';
@@ -253,7 +252,7 @@ class PropertyAddingPage extends StatelessWidget {
                                 height:
                                     MediaQuery.of(context).size.height * 0.25,
                                 decoration: Styles().imageContainerDecration(),
-                                child: context
+                                child:state is ImageAddingState? lottie.Lottie.asset('assets/images/imageLoading.json') : context
                                         .watch<MainPropertyBloc>()
                                         .image
                                         .isEmpty
@@ -279,7 +278,7 @@ class PropertyAddingPage extends StatelessWidget {
                           ),
                           margin: const EdgeInsets.all(10),
                           child: ElevatedButton(
-                              style: Styles().elevatedButtonBorderOnlyStyle(),
+                              style: Styles().elevatedButtonBorderOnlyStyle(context),
                               onPressed: () {
                                 BlocProvider.of<MainPropertyBloc>(context)
                                     .add(OnClickToAddMultipleImage());

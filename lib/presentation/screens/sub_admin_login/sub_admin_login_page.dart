@@ -10,6 +10,7 @@ import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/sub_admin_main_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_signup/sub_admin_signup.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_signup/sub_admin_signup_more.dart';
+import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 class SubAdminLogin extends StatelessWidget {
@@ -118,6 +119,7 @@ class SubAdminLogin extends StatelessWidget {
                     },
                     listener: (context, state) {
                       if (state is SubAdminLoginSuccessState) {
+                        SnackBars().successSnackBar('Login Successfully', context);
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(builder: (ctx) {
                           return SubAdminMainPage();

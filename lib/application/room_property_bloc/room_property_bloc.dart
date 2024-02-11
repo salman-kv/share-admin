@@ -43,11 +43,11 @@ class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
     on<OnFeatureDeletedEvent>((event, emit) {
       features.remove(event.text);
       if (event.text == 'AC') {
-          ac = false;
-        }
-        if (event.text == 'Wifi') {
-          wifi = false;
-        }
+        ac = false;
+      }
+      if (event.text == 'Wifi') {
+        wifi = false;
+      }
       emit(FeatureDeletedState());
     });
     on<OnClickToAddMultipleImageEvent>((event, emit) async {
@@ -57,10 +57,14 @@ class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
     });
     on<OnClickEditToAddMultipleImageEvent>((event, emit) async {
       var nweImage = await SubAdminFunction().subAdminPickMultipleImage();
-      List<String> listOfImage =
-          await SubAdminFunction().uploadListImageToFirebase(nweImage);
-      editImage.addAll(listOfImage);
-      emit(MultipleImageAddedState());
+      if (nweImage.isNotEmpty) {
+        emit(ImageLoadingState());
+
+        List<String> listOfImage =
+            await SubAdminFunction().uploadListImageToFirebase(nweImage);
+        editImage.addAll(listOfImage);
+        emit(MultipleImageAddedState());
+      }
     });
     on<OnBedSelectEvent>((event, emit) {
       numberOfBed = event.numberOfBed;
@@ -139,11 +143,11 @@ class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
       }
     });
     on<CleanExistingDataFromRommBlocEvent>((event, emit) {
-      features=[];
-      numberOfBed=null;
-      ac=false;
-      wifi=false;
-      image=[];
+      features = [];
+      numberOfBed = null;
+      ac = false;
+      wifi = false;
+      image = [];
     });
   }
 }

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_bloc.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_event.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_state.dart';
@@ -30,17 +31,20 @@ class RoomShowingPage extends StatelessWidget {
               propertyModel;
           return SafeArea(
               child: Scaffold(
-                  appBar: AppBar(),
+                  appBar: AppBar(
+                    title: Text(
+                      'Your Rooms',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    centerTitle: true,
+                    leading: IconButton(onPressed: (){
+                      Navigator.of(context).pop();
+                    }, icon: const Icon(Icons.arrow_back_ios_new_rounded)),
+                  ),
                   body: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Your Rooms',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ),
+                      
                       Expanded(
                         child: StreamBuilder(
                           stream: FirebaseFirestore.instance
@@ -91,7 +95,25 @@ class RoomShowingPage extends StatelessWidget {
                                         );
                                       }),
                                     )
-                                  : const Text('No room added');
+                                  : Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Lottie.asset(
+                                            'assets/images/room.json'),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        Text(
+                                          'No Room found',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge!
+                                              .copyWith(color: Colors.grey),
+                                        )
+                                      ],
+                                    );
+                              ;
                             } else {
                               return const Text('No data');
                             }
@@ -106,7 +128,8 @@ class RoomShowingPage extends StatelessWidget {
                         ),
                         margin: const EdgeInsets.all(10),
                         child: ElevatedButton(
-                            style: Styles().elevatedButtonBorderOnlyStyle(),
+                            style:
+                                Styles().elevatedButtonBorderOnlyStyle(context),
                             onPressed: () {
                               BlocProvider.of<RoomPropertyBloc>(context)
                                   .add(CleanExistingDataFromRommBlocEvent());

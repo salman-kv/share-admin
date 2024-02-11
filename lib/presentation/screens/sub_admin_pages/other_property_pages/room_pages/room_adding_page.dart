@@ -421,7 +421,7 @@ class RoomAddingPage extends StatelessWidget {
                       ),
                       margin: const EdgeInsets.all(10),
                       child: ElevatedButton(
-                          style: Styles().elevatedButtonBorderOnlyStyle(),
+                          style: Styles().elevatedButtonBorderOnlyStyle(context),
                           onPressed: () {
                             BlocProvider.of<RoomPropertyBloc>(context)
                                 .add(OnClickToAddMultipleImageEvent());

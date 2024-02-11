@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:share_sub_admin/application/room_property_bloc/room_property_bloc.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_event.dart';
@@ -393,7 +394,7 @@ class RoomEditPage extends StatelessWidget {
                             width: MediaQuery.of(context).size.width * 0.9,
                             height: MediaQuery.of(context).size.height * 0.25,
                             decoration: Styles().imageContainerDecration(),
-                            child: context
+                            child:state is ImageLoadingState? Lottie.asset('assets/images/imageLoading.json') : context
                                     .watch<RoomPropertyBloc>()
                                     .editImage
                                     .isEmpty
@@ -419,7 +420,7 @@ class RoomEditPage extends StatelessWidget {
                       ),
                       margin: const EdgeInsets.all(10),
                       child: ElevatedButton(
-                          style: Styles().elevatedButtonBorderOnlyStyle(),
+                          style: Styles().elevatedButtonBorderOnlyStyle(context),
                           onPressed: () {
                             BlocProvider.of<RoomPropertyBloc>(context)
                                 .add(OnClickEditToAddMultipleImageEvent());
@@ -495,6 +496,11 @@ class RoomEditPage extends StatelessWidget {
                 roomIdKey.currentState!.validate();
               } else if (state is RoomDeatailsSubmittedState) {
                 Navigator.of(context).pop();
+              }
+              else if(state is ImageLoadingState){
+                SnackBars().notifyingSnackBar('Image is loading', context);
+              }else if(state is MultipleImageAddedState){
+                SnackBars().successSnackBar('Image added successfully', context);
               }
             },
           ),

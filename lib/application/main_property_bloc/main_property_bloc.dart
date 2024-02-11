@@ -35,10 +35,12 @@ class MainPropertyBloc extends Bloc<MainPropertyEvent, MainPropertyState> {
     });
     on<OnClickToAddMultipleImage>((event, emit) async {
       var nweImage = await SubAdminFunction().subAdminPickMultipleImage();
-      emit(ImageAddingState());
+      if(nweImage.isNotEmpty){
+        emit(ImageAddingState());
       List<dynamic> returnUrl = await SubAdminFunction().uploadListImageToFirebase(nweImage);
       image.addAll(returnUrl);
       emit(ImageAddedState());
+      }
     });
     on<OnCatogorySelect>((event, emit) {
       hotelType = event.hotelType;
