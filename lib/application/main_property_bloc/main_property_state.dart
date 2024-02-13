@@ -8,4 +8,5 @@ class MainPropertyLoadingState extends MainPropertyState{}
 class MainPropertyUpdatedState extends MainPropertyState{}
 class ImageAddedState extends MainPropertyState{}
 class ImageAddingState extends MainPropertyState{}
+class ImageDeletedState extends MainPropertyState{}
 class CatagoryAddedState extends MainPropertyState{}

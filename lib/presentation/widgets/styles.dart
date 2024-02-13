@@ -168,9 +168,14 @@ class Styles {
 
   // *****************************************************************************************************************************
 
-  imageContainerDecration() {
+  imageContainerDecrationWithImage(String image) {
     return BoxDecoration(
-        // image: DecorationImage(image: AssetImage(image.p)),
+        image: DecorationImage(image: NetworkImage(image),fit: BoxFit.fill),
+        color: ConstColors().mainColorpurple.withOpacity(0.3),
+        borderRadius: const BorderRadius.all(Radius.circular(20)));
+  }
+  imageContainerDecrationWithOutImage() {
+    return BoxDecoration(
         color: ConstColors().mainColorpurple.withOpacity(0.3),
         borderRadius: const BorderRadius.all(Radius.circular(20)));
   }

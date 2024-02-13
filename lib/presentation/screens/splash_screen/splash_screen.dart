@@ -12,8 +12,8 @@ import 'package:share_sub_admin/presentation/screens/sub_admin_pages/sub_admin_m
 import 'package:share_sub_admin/presentation/screens/welcome_sub_admin/welcome_sub_admin.dart';
 
 class SplashScreen extends StatelessWidget {
-  String? userId;
-  SplashScreen({required this.userId, super.key});
+  final String? userId;
+  const SplashScreen({required this.userId, super.key});
 
   @override
   Widget build(BuildContext context) {

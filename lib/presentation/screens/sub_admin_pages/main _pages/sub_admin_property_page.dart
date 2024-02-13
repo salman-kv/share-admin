@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +40,8 @@ class SubAdminPropertyPage extends StatelessWidget {
                 Map<String, dynamic> data =
                     snapshot.data!.data() as Map<String, dynamic>;
                 List<dynamic>? hotelList = data['hotel'];
-                if (hotelList == null) {
+                if (hotelList == null || hotelList.isEmpty) {
+                  log('kerri');
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

@@ -39,7 +39,6 @@ class SubAdmin extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: SubAdminThme().lightTheme,
         darkTheme: SubAdminThme().darkTheme,
-        // home: loginStatus == '' ? SubAdminLogin() : loginStatus!=null ? SubAdminMainPage(userId: loginStatus!,) :  const WelcomeSubAdmin(),
         home: SplashScreen(userId: loginStatus),
       ),
     );

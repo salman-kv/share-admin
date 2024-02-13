@@ -37,14 +37,15 @@ class RoomShowingPage extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     centerTitle: true,
-                    leading: IconButton(onPressed: (){
-                      Navigator.of(context).pop();
-                    }, icon: const Icon(Icons.arrow_back_ios_new_rounded)),
+                    leading: IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded)),
                   ),
                   body: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      
                       Expanded(
                         child: StreamBuilder(
                           stream: FirebaseFirestore.instance
@@ -57,11 +58,29 @@ class RoomShowingPage extends StatelessWidget {
                             if (snapshot.hasData) {
                               Map<String, dynamic> hotelDeatails =
                                   snapshot.data!.data() as Map<String, dynamic>;
-
                               return hotelDeatails[FirebaseFirestoreConst
-                                          .firebaseFireStoreRooms] !=
-                                      null
-                                  ? ListView(
+                                              .firebaseFireStoreRooms] ==
+                                          null ||
+                                      hotelDeatails[FirebaseFirestoreConst
+                                              .firebaseFireStoreRooms].isEmpty
+                                  ? Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Lottie.asset('assets/images/room.json'),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        Text(
+                                          'No Room found',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge!
+                                              .copyWith(color: Colors.grey),
+                                        )
+                                      ],
+                                    )
+                                  : ListView(
                                       children: List.generate(
                                           hotelDeatails[FirebaseFirestoreConst
                                                   .firebaseFireStoreRooms]
@@ -94,26 +113,7 @@ class RoomShowingPage extends StatelessWidget {
                                           },
                                         );
                                       }),
-                                    )
-                                  : Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Lottie.asset(
-                                            'assets/images/room.json'),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        Text(
-                                          'No Room found',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleLarge!
-                                              .copyWith(color: Colors.grey),
-                                        )
-                                      ],
                                     );
-                              ;
                             } else {
                               return const Text('No data');
                             }

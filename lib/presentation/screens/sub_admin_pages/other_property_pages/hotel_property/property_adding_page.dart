@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -9,16 +8,15 @@ import 'package:share_sub_admin/application/main_property_bloc/main_property_sta
 import 'package:share_sub_admin/domain/enum/hotel_type.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
 import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
+import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/location/location_picking_page.dart';
-import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
 class PropertyAddingPage extends StatelessWidget {
   MainPropertyModel? propertyModel;
   String? hotelId;
-  PropertyAddingPage(
-      {MainPropertyModel? this.propertyModel, String? this.hotelId});
+  PropertyAddingPage({super.key, this.propertyModel, this.hotelId});
 
   var formKey = GlobalKey<FormState>();
   var nameKey = GlobalKey<FormFieldState>();
@@ -246,27 +244,83 @@ class PropertyAddingPage extends StatelessWidget {
                                         .read<MainPropertyBloc>()
                                         .image
                                         .length, (index) {
-                              return Container(
-                                margin: const EdgeInsets.all(20),
-                                width: MediaQuery.of(context).size.width * 0.9,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.25,
-                                decoration: Styles().imageContainerDecration(),
-                                child:state is ImageAddingState? lottie.Lottie.asset('assets/images/imageLoading.json') : context
-                                        .watch<MainPropertyBloc>()
-                                        .image
-                                        .isEmpty
-                                    ? Center(
-                                        child: Text(
-                                          'pls add some image of this property',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .displaySmall,
+                              return Stack(
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.all(20),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.25,
+                                    decoration: state is ImageAddingState
+                                        ? Styles()
+                                            .imageContainerDecrationWithOutImage()
+                                        : context
+                                                .watch<MainPropertyBloc>()
+                                                .image
+                                                .isNotEmpty
+                                            ? Styles()
+                                                .imageContainerDecrationWithImage(
+                                                    context
+                                                        .read<
+                                                            MainPropertyBloc>()
+                                                        .image[index])
+                                            : Styles()
+                                                .imageContainerDecrationWithOutImage(),
+                                    child: state is ImageAddingState
+                                        ? lottie.Lottie.asset(
+                                            'assets/images/imageLoading.json')
+                                        : context
+                                                .watch<MainPropertyBloc>()
+                                                .image
+                                                .isEmpty
+                                            ? Center(
+                                                child: Text(
+                                                  'pls add some image of this property',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .displaySmall,
+                                                ),
+                                              )
+                                            : const SizedBox(),
+                                  ),
+                                  state is ImageAddingState ||
+                                          context
+                                              .watch<MainPropertyBloc>()
+                                              .image
+                                              .isEmpty
+                                      ? const SizedBox()
+                                      : Positioned(
+                                          right: 15,
+                                          top: 15,
+                                          child: InkWell(
+                                            onTap: () {
+                                              BlocProvider.of<MainPropertyBloc>(
+                                                      context)
+                                                  .add(OnDeleteImageEvent(
+                                                      image: context
+                                                          .read<
+                                                              MainPropertyBloc>()
+                                                          .image[index]));
+                                            },
+                                            child: Container(
+                                              height: 35,
+                                              width: 35,
+                                              decoration: BoxDecoration(
+                                                  color: ConstColors()
+                                                      .mainColorpurple,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100)),
+                                              child: const Icon(
+                                                Icons.cancel_rounded,
+                                                color: Color.fromARGB(255, 255, 255, 255),
+                                                size: 25,
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      )
-                                    : Image.network(context
-                                        .watch<MainPropertyBloc>()
-                                        .image[index]),
+                                ],
                               );
                             }),
                           ),
@@ -278,7 +332,8 @@ class PropertyAddingPage extends StatelessWidget {
                           ),
                           margin: const EdgeInsets.all(10),
                           child: ElevatedButton(
-                              style: Styles().elevatedButtonBorderOnlyStyle(context),
+                              style: Styles()
+                                  .elevatedButtonBorderOnlyStyle(context),
                               onPressed: () {
                                 BlocProvider.of<MainPropertyBloc>(context)
                                     .add(OnClickToAddMultipleImage());
@@ -354,12 +409,16 @@ class PropertyAddingPage extends StatelessWidget {
                 },
                 listener: (context, state) {
                   if (state is MainPropertyUpdatedState) {
-                    SnackBars().successSnackBar('Property Added Successfully', context);
+                    SnackBars().successSnackBar(
+                        'Property Added Successfully', context);
                     Navigator.of(context).pop();
                   } else if (state is ImageAddingState) {
                     SnackBars().notifyingSnackBar('image is loading', context);
                   } else if (state is ImageAddedState) {
                     SnackBars().successSnackBar('image added', context);
+                  } else if (state is ImageDeletedState) {
+                    SnackBars()
+                        .successSnackBar('Image deleted successfully', context);
                   }
                 },
               ),

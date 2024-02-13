@@ -32,6 +32,14 @@ class SubAdminHomePage extends StatelessWidget {
                       padding:const  EdgeInsets.all(10),
                       child: CommonWidget().roomStatusShowingContainer(context)
                     ),
+                    Padding(
+                      padding:const  EdgeInsets.all(10),
+                      child: CommonWidget().roomStatusShowingContainer(context)
+                    ),
+                    Padding(
+                      padding:const  EdgeInsets.all(10),
+                      child: CommonWidget().roomStatusShowingContainer(context)
+                    ),
                   ],
                 ),
                 ListView(

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'dart:io';
 
@@ -13,7 +12,6 @@ import 'package:share_sub_admin/application/room_property_bloc/room_property_sta
 import 'package:share_sub_admin/domain/enum/hotel_type.dart';
 import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
-import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 class RoomAddingPage extends StatelessWidget {
@@ -28,6 +26,7 @@ class RoomAddingPage extends StatelessWidget {
   final priceController = TextEditingController();
   final bedNumberController = TextEditingController();
   final featuresController = TextEditingController();
+  final Set<String> commenFeatures={'AC','Wifi','TV','Attached Bathroom','Commen Bathroom','Swimming pool','Parking','Balconu'};
 
   Timer? _debouncer;
 
@@ -84,7 +83,6 @@ class RoomAddingPage extends StatelessWidget {
                                                   context)
                                               .hotelId!));
                             });
-                            // roomIdKey.currentState!.validate();
                           },
                           controller: roomIdController,
                           decoration: Styles().formDecorationStyleWithSufix(
@@ -211,7 +209,7 @@ class RoomAddingPage extends StatelessWidget {
                                 controller: bedNumberController,
                                 decoration: Styles().formDecorationStyle(
                                     icon: const Icon(Icons.bed),
-                                    labelText: 'Number Of Bed'),
+                                    labelText: '                                                                                                                                                                                                                                                                                                                                                                                                                                        '),
                                 style: Styles().formTextStyle(context),
                               ),
                             ),
@@ -396,7 +394,7 @@ class RoomAddingPage extends StatelessWidget {
                             margin: const EdgeInsets.all(20),
                             width: MediaQuery.of(context).size.width * 0.9,
                             height: MediaQuery.of(context).size.height * 0.25,
-                            decoration: Styles().imageContainerDecration(),
+                            decoration: Styles().imageContainerDecrationWithOutImage(),
                             child:
                                 context.watch<RoomPropertyBloc>().image.isEmpty
                                     ? Center(

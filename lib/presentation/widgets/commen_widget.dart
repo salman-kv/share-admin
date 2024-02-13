@@ -24,6 +24,7 @@ import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_prope
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_adding_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_edit_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/single_room_showing_page.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 class CommonWidget {
@@ -77,6 +78,9 @@ class CommonWidget {
 
   hotelShowingContainer(
       BuildContext context, MainPropertyModel propertyModel, String hotelId) {
+        List<dynamic> tempImages=[];
+        tempImages.addAll(propertyModel.image);
+    log('hotel showing pimnem rebuild aaayi');
     return GestureDetector(
       onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) {
         return RoomShowingPage(hotelId: hotelId, propertyModel: propertyModel);
@@ -88,14 +92,6 @@ class CommonWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               color: ConstColors().mainColorpurple.withOpacity(0.3),
-              // gradient: LinearGradient(
-              //   begin: Alignment.bottomLeft,
-              //   end: Alignment.bottomRight,
-              //   colors: [
-
-              //   ConstColors().mainColorpurple.withOpacity(0.5),
-              //   ConstColors().main2Colorpur.withOpacity(0.4),
-              // ]),
             ),
             constraints: const BoxConstraints(minHeight: 300),
             child: Column(
@@ -189,8 +185,10 @@ class CommonWidget {
                     itemBuilder: (context) {
                       return [
                         PopupMenuItem(
-                            onTap: () {
-                              Navigator.of(context)
+                            onTap: () async{
+                              propertyModel.image.clear();
+                              propertyModel.image.addAll(tempImages);
+                               Navigator.of(context)
                                   .push(MaterialPageRoute(builder: (ctx) {
                                 return PropertyAddingPage(
                                   hotelId: hotelId,
@@ -204,7 +202,6 @@ class CommonWidget {
                             )),
                         PopupMenuItem(
                             onTap: () {
-                              // SubAdminFunction().deleteHotelFromSubAdmin(propertyModel: propertyModel, hotelId: hotelId);
                               Alerts().dialgForDelete(
                                   context: context,
                                   type: 'hotelDelete',
@@ -228,113 +225,132 @@ class CommonWidget {
   roomShowingOnPropertyContainer(
       BuildContext context, Map<String, dynamic> data, String roomId) {
     RoomModel roomModel = RoomModel.fromMap(data);
-    return Container(
-      margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          // color: ConstColors().mainColorpurple.withOpacity(0.2),
-          gradient: LinearGradient(colors: [
-            ConstColors().mainColorpurple.withOpacity(0.4),
-            ConstColors().main2Colorpur.withOpacity(0.2),
-          ]),
-          borderRadius: const BorderRadius.all(Radius.circular(20))),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: 130,
-              width: 150,
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(20)),
-                  image: DecorationImage(
-                      image: NetworkImage(roomModel.images[0]),
-                      fit: BoxFit.fill)),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(builder: (ctx) {
+          return BlocProvider.value(
+            value: BlocProvider.of<RoomPropertyBloc>(context),
+            child: SingleRoomShowingPage(
+              roomId: roomId,
+              roomModel: roomModel,
             ),
-          ),
-          Expanded(
-            child: Padding(
+          );
+        }));
+      },
+      child: Container(
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            // color: ConstColors().mainColorpurple.withOpacity(0.2),
+            gradient: LinearGradient(colors: [
+              ConstColors().mainColorpurple.withOpacity(0.4),
+              ConstColors().main2Colorpur.withOpacity(0.2),
+            ]),
+            borderRadius: const BorderRadius.all(Radius.circular(20))),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    roomModel.roomNumber,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  Text(
-                    '₹ ${roomModel.price}',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  Text(
-                    'Availability : ${roomModel.availability}',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ElevatedButton(
-                          style: Styles().editElevatedButtonStyle(),
-                          onPressed: () {
-                            BlocProvider.of<RoomPropertyBloc>(context)
-                                .features = roomModel.features;
-                            BlocProvider.of<RoomPropertyBloc>(context)
-                                .numberOfBed = roomModel.numberOfBed;
-                            BlocProvider.of<RoomPropertyBloc>(context)
-                                .roomNumber = roomModel.roomNumber;
-                            BlocProvider.of<RoomPropertyBloc>(context).price =
-                                roomModel.price;
-                            BlocProvider.of<RoomPropertyBloc>(context)
-                                .editImage = roomModel.images;
-                            BlocProvider.of<RoomPropertyBloc>(context)
-                                .staticEditRoomNumber = roomModel.roomNumber;
-                            if (roomModel.features.contains('AC')) {
-                              BlocProvider.of<RoomPropertyBloc>(context).ac =
-                                  true;
-                            }
-                            if (roomModel.features.contains('Wifi')) {
-                              BlocProvider.of<RoomPropertyBloc>(context).wifi =
-                                  true;
-                            }
-
-                            // BlocProvider.of<RoomPropertyBloc>(context).image=roomModel.images as List<XFile>;
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (ctx) {
-                              return BlocProvider.value(
-                                  value: BlocProvider.of<RoomPropertyBloc>(
-                                      context),
-                                  child: RoomEditPage(
-                                    roomId: roomId,
-                                  ));
-                            }));
-                          },
-                          child: Text(
-                            'Edit',
-                            style: Theme.of(context).textTheme.titleSmall,
-                          )),
-                      ElevatedButton(
-                          style: Styles().deleteElevatedButtonStyle(),
-                          onPressed: () async {
-                            Alerts().dialgForDelete(
-                                context: context,
-                                hotelId:
-                                    BlocProvider.of<RoomPropertyBloc>(context)
-                                        .hotelId!,
-                                roomId: roomId,
-                                type: 'roomDelete',
-                                roomModel: roomModel);
-                          },
-                          child: Text(
-                            'Delete',
-                            style: Theme.of(context).textTheme.labelSmall,
-                          )),
-                    ],
-                  )
-                ],
+              child: Container(
+                height: 130,
+                width: 150,
+                decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(20)),
+                    image: DecorationImage(
+                        image: NetworkImage(roomModel.images[0]),
+                        fit: BoxFit.fill)),
               ),
             ),
-          )
-        ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      roomModel.roomNumber,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      '₹ ${roomModel.price}',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    Text(
+                      'Availability : ${roomModel.availability}',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                            style: Styles().editElevatedButtonStyle(),
+                            onPressed: () {
+                              BlocProvider.of<RoomPropertyBloc>(context)
+                                  .features = roomModel.features;
+                              BlocProvider.of<RoomPropertyBloc>(context)
+                                  .numberOfBed = roomModel.numberOfBed;
+                              BlocProvider.of<RoomPropertyBloc>(context)
+                                  .roomNumber = roomModel.roomNumber;
+                              BlocProvider.of<RoomPropertyBloc>(context).price =
+                                  roomModel.price;
+                              BlocProvider.of<RoomPropertyBloc>(context)
+                                  .editImage = roomModel.images;
+                              BlocProvider.of<RoomPropertyBloc>(context)
+                                  .staticEditRoomNumber = roomModel.roomNumber;
+                              if (roomModel.features.contains('AC')) {
+                                BlocProvider.of<RoomPropertyBloc>(context).ac =
+                                    true;
+                              }
+                              if (roomModel.features.contains('Wifi')) {
+                                BlocProvider.of<RoomPropertyBloc>(context)
+                                    .wifi = true;
+                              }
+
+                              // BlocProvider.of<RoomPropertyBloc>(context).image=roomModel.images as List<XFile>;
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: (ctx) {
+                                return BlocProvider.value(
+                                    value: BlocProvider.of<RoomPropertyBloc>(
+                                        context),
+                                    child: RoomEditPage(
+                                      roomId: roomId,
+                                    ));
+                              }));
+                            },
+                            child: Text(
+                              'Edit',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(color: Colors.black),
+                            )),
+                        ElevatedButton(
+                            style: Styles().deleteElevatedButtonStyle(),
+                            onPressed: () async {
+                              Alerts().dialgForDelete(
+                                  context: context,
+                                  hotelId:
+                                      BlocProvider.of<RoomPropertyBloc>(context)
+                                          .hotelId!,
+                                  roomId: roomId,
+                                  type: 'roomDelete',
+                                  roomModel: roomModel);
+                            },
+                            child: Text(
+                              'Delete',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelSmall!
+                                  .copyWith(color: Colors.white),
+                            )),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -414,14 +430,17 @@ class CommonWidget {
             margin: const EdgeInsets.all(10),
             height: MediaQuery.of(context).size.width * 0.45,
             width: MediaQuery.of(context).size.width * 0.45,
-            decoration:  BoxDecoration(
-                borderRadius:const BorderRadius.all(
-                  Radius.circular(150),
-                ),
-                image: DecorationImage( 
-                    image: NetworkImage(BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.imagePath),fit: BoxFit.cover),
-                ),
-                
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(
+                Radius.circular(150),
+              ),
+              image: DecorationImage(
+                  image: NetworkImage(
+                      BlocProvider.of<SubAdminLoginBloc>(context)
+                          .subAdminModel!
+                          .imagePath),
+                  fit: BoxFit.cover),
+            ),
           ),
           Text(
             BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.name,
@@ -503,7 +522,7 @@ class CommonWidget {
                 ),
                 InkWell(
                   onTap: () {
-                   Alerts().dialgForDelete(context: context, type: 'logOut');
+                    Alerts().dialgForDelete(context: context, type: 'logOut');
                   },
                   child: Container(
                     margin:
