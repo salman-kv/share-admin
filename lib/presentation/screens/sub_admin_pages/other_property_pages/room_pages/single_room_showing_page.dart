@@ -66,14 +66,14 @@ class SingleRoomShowingPage extends StatelessWidget {
                                   .editImage = roomModel.images;
                               BlocProvider.of<RoomPropertyBloc>(context)
                                   .staticEditRoomNumber = roomModel.roomNumber;
-                              if (roomModel.features.contains('AC')) {
-                                BlocProvider.of<RoomPropertyBloc>(context).ac =
-                                    true;
-                              }
-                              if (roomModel.features.contains('Wifi')) {
-                                BlocProvider.of<RoomPropertyBloc>(context).wifi =
-                                    true;
-                              }
+                              // if (roomModel.features.contains('AC')) {
+                              //   BlocProvider.of<RoomPropertyBloc>(context).ac =
+                              //       true;
+                              // }
+                              // if (roomModel.features.contains('Wifi')) {
+                              //   BlocProvider.of<RoomPropertyBloc>(context).wifi =
+                              //       true;
+                              // }
                               Navigator.of(context)
                                   .push(MaterialPageRoute(builder: (ctx) {
                                 return BlocProvider.value(

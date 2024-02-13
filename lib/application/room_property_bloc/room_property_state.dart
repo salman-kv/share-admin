@@ -13,3 +13,4 @@ class RoomNumberSuccessState extends RoomPropertyState{}
 class RoomNumberFailedState extends RoomPropertyState{}
 class FeatureAlreadyExistState extends RoomPropertyState{}
 class ImageLoadingState extends RoomPropertyState{}
+class ImageDeletedState extends RoomPropertyState{}

@@ -240,7 +240,6 @@ class CommonWidget {
       child: Container(
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-            // color: ConstColors().mainColorpurple.withOpacity(0.2),
             gradient: LinearGradient(colors: [
               ConstColors().mainColorpurple.withOpacity(0.4),
               ConstColors().main2Colorpur.withOpacity(0.2),
@@ -297,14 +296,7 @@ class CommonWidget {
                                   .editImage = roomModel.images;
                               BlocProvider.of<RoomPropertyBloc>(context)
                                   .staticEditRoomNumber = roomModel.roomNumber;
-                              if (roomModel.features.contains('AC')) {
-                                BlocProvider.of<RoomPropertyBloc>(context).ac =
-                                    true;
-                              }
-                              if (roomModel.features.contains('Wifi')) {
-                                BlocProvider.of<RoomPropertyBloc>(context)
-                                    .wifi = true;
-                              }
+                              
 
                               // BlocProvider.of<RoomPropertyBloc>(context).image=roomModel.images as List<XFile>;
                               Navigator.of(context)
@@ -369,7 +361,7 @@ class CommonWidget {
       child: Row(
         children: [
           Padding(
-            padding: EdgeInsets.all(4),
+            padding:const EdgeInsets.all(4),
             child: Image.asset('assets/images/profile.png'),
           ),
           Expanded(
@@ -393,28 +385,28 @@ class CommonWidget {
 
   // checked box
 
-  checkedBoxForRoomAdding(BuildContext context, String data) {
-    var blocVal;
-    if (data == 'AC') {
-      blocVal = BlocProvider.of<RoomPropertyBloc>(context).ac;
-    } else {
-      blocVal = BlocProvider.of<RoomPropertyBloc>(context).wifi;
-    }
-    return Checkbox(
-      value: blocVal,
-      onChanged: (value) {
-        if (value == true) {
-          BlocProvider.of<RoomPropertyBloc>(context)
-              .add(OnFeatureAddingEvent(text: data));
-          blocVal = true;
-        } else {
-          BlocProvider.of<RoomPropertyBloc>(context)
-              .add(OnFeatureDeletedEvent(text: data));
-          blocVal = false;
-        }
-      },
-    );
-  }
+  // checkedBoxForRoomAdding(BuildContext context, String data) {
+  //   var blocVal;
+  //   if (data == 'AC') {
+  //     blocVal = BlocProvider.of<RoomPropertyBloc>(context).ac;
+  //   } else {
+  //     blocVal = BlocProvider.of<RoomPropertyBloc>(context).wifi;
+  //   }
+  //   return Checkbox(
+  //     value: blocVal,
+  //     onChanged: (value) {
+  //       if (value == true) {
+  //         BlocProvider.of<RoomPropertyBloc>(context)
+  //             .add(OnFeatureAddingEvent(text: data));
+  //         blocVal = true;
+  //       } else {
+  //         BlocProvider.of<RoomPropertyBloc>(context)
+  //             .add(OnFeatureDeletedEvent(text: data));
+  //         blocVal = false;
+  //       }
+  //     },
+  //   );
+  // }
 
   // drawer
 

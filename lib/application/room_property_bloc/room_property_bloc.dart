@@ -1,14 +1,12 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_event.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_state.dart';
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
 import 'package:share_sub_admin/domain/model/room_model.dart';
-import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
 
 class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
   MainPropertyModel? propertyModel;
@@ -20,8 +18,6 @@ class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
   String? roomNumber;
   String? staticEditRoomNumber;
   int? price;
-  bool ac = false;
-  bool wifi = false;
   RoomPropertyBloc() : super(RoomPropertyBlocInitial()) {
     on<OnSettingHotelIdEvent>((event, emit) {
       hotelId = event.hotelId;
@@ -31,24 +27,21 @@ class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
         emit(FeatureAlreadyExistState());
       } else {
         features.add(event.text);
-        if (event.text == 'AC') {
-          ac = true;
-        }
-        if (event.text == 'Wifi') {
-          wifi = true;
-        }
         emit(FeatureAddedState());
       }
     });
     on<OnFeatureDeletedEvent>((event, emit) {
       features.remove(event.text);
-      if (event.text == 'AC') {
-        ac = false;
-      }
-      if (event.text == 'Wifi') {
-        wifi = false;
-      }
       emit(FeatureDeletedState());
+    });
+    on<FeatureAddingByCheckedBoxEvent>((event, emit) {
+      if (features.contains(event.text)) {
+        features.remove(event.text);
+        emit(FeatureDeletedState());
+      } else {
+        features.add(event.text);
+        emit(FeatureAddedState());
+      }
     });
     on<OnClickToAddMultipleImageEvent>((event, emit) async {
       var nweImage = await SubAdminFunction().subAdminPickMultipleImage();
@@ -145,9 +138,15 @@ class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
     on<CleanExistingDataFromRommBlocEvent>((event, emit) {
       features = [];
       numberOfBed = null;
-      ac = false;
-      wifi = false;
       image = [];
+    });
+    on<OnDeleteImageEvent>((event, emit) {
+      image.remove(event.image);
+      emit(ImageDeletedState());
+    });
+    on<OnDeleteEditImageEvent>((event, emit) {
+      editImage.remove(event.image);
+      emit(ImageDeletedState());
     });
   }
 }

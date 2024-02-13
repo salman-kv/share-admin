@@ -60,3 +60,20 @@ class OnClickEditToAddMultipleImageEvent extends RoomPropertyEvent{
 }
 
 class CleanExistingDataFromRommBlocEvent extends RoomPropertyEvent{}
+
+class FeatureAddingByCheckedBoxEvent extends RoomPropertyEvent{
+  final String text;
+
+  FeatureAddingByCheckedBoxEvent({required this.text});
+}
+
+class OnDeleteImageEvent extends RoomPropertyEvent{
+  final String image;
+
+  OnDeleteImageEvent({required this.image});
+}
+class OnDeleteEditImageEvent extends RoomPropertyEvent{
+  final String image;
+
+  OnDeleteEditImageEvent({required this.image});
+}

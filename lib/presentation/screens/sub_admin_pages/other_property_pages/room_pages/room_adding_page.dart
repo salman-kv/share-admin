@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'dart:io';
 
@@ -26,7 +27,16 @@ class RoomAddingPage extends StatelessWidget {
   final priceController = TextEditingController();
   final bedNumberController = TextEditingController();
   final featuresController = TextEditingController();
-  final Set<String> commenFeatures={'AC','Wifi','TV','Attached Bathroom','Commen Bathroom','Swimming pool','Parking','Balconu'};
+  final Set<String> commenFeatures = {
+    'AC',
+    'Wifi',
+    'TV',
+    'Attached Bathroom',
+    'Commen Bathroom',
+    'Swimming pool',
+    'Parking',
+    'Balcony'
+  };
 
   Timer? _debouncer;
 
@@ -209,7 +219,8 @@ class RoomAddingPage extends StatelessWidget {
                                 controller: bedNumberController,
                                 decoration: Styles().formDecorationStyle(
                                     icon: const Icon(Icons.bed),
-                                    labelText: '                                                                                                                                                                                                                                                                                                                                                                                                                                        '),
+                                    labelText:
+                                        '                                                                                                                                                                                                                                                                                                                                                                                                                                        '),
                                 style: Styles().formTextStyle(context),
                               ),
                             ),
@@ -223,51 +234,38 @@ class RoomAddingPage extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleLarge,
                           )),
                     ),
-                    Row(
-                      children: [
-                        Padding(
+                    Wrap(
+                      children: List.generate(commenFeatures.length, (index) {
+                        return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value:
-                                    BlocProvider.of<RoomPropertyBloc>(context).ac,
-                                onChanged: (value) {
-                                  if (value == true) {
+                          child: SizedBox(
+                            width: 150,
+                            child: Row(
+                              children: [
+                                Checkbox(
+                                  value: context
+                                      .read<RoomPropertyBloc>()
+                                      .features
+                                      .contains(
+                                          commenFeatures.elementAt(index)),
+                                  onChanged: (value) {
                                     BlocProvider.of<RoomPropertyBloc>(context)
-                                        .add(OnFeatureAddingEvent(text: 'AC'));
-                                  } else {
-                                    BlocProvider.of<RoomPropertyBloc>(context)
-                                        .add(OnFeatureDeletedEvent(text: 'AC'));
-                                  }
-                                },
-                              ),
-                              const Text('AC')
-                            ],
+                                        .add(FeatureAddingByCheckedBoxEvent(
+                                            text: commenFeatures
+                                                .elementAt(index)));
+                                  },
+                                ),
+                                Expanded(
+                                    child: Text(
+                                  commenFeatures.elementAt(index),
+                                  style:
+                                      Theme.of(context).textTheme.displaySmall,
+                                ))
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value:
-                                    BlocProvider.of<RoomPropertyBloc>(context).wifi,
-                                onChanged: (value) {
-                                  if (value == true) {
-                                    BlocProvider.of<RoomPropertyBloc>(context)
-                                        .add(OnFeatureAddingEvent(text: 'Wifi'));
-                                  } else {
-                                    BlocProvider.of<RoomPropertyBloc>(context)
-                                        .add(OnFeatureDeletedEvent(text: 'Wifi'));
-                                  }
-                                },
-                              ),
-                              const Text('Wifi')
-                            ],
-                          ),
-                        ),
-                      ],
+                        );
+                      }),
                     ),
                     Row(
                       children: [
@@ -344,21 +342,6 @@ class RoomAddingPage extends StatelessWidget {
                                             Color.fromARGB(0, 255, 193, 7)),
                                     label: TextButton.icon(
                                         onPressed: () {
-                                          if (BlocProvider.of<RoomPropertyBloc>(
-                                                      context)
-                                                  .features[index] ==
-                                              'AC') {
-                                            BlocProvider.of<RoomPropertyBloc>(
-                                                    context)
-                                                .ac = false;
-                                          } else if (BlocProvider.of<
-                                                      RoomPropertyBloc>(context)
-                                                  .features[index] ==
-                                              'Wifi') {
-                                            BlocProvider.of<RoomPropertyBloc>(
-                                                    context)
-                                                .wifi = false;
-                                          }
                                           BlocProvider.of<RoomPropertyBloc>(
                                                   context)
                                               .add(OnFeatureDeletedEvent(
@@ -390,24 +373,62 @@ class RoomAddingPage extends StatelessWidget {
                                 ? 1
                                 : context.read<RoomPropertyBloc>().image.length,
                             (index) {
-                          return Container(
-                            margin: const EdgeInsets.all(20),
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            height: MediaQuery.of(context).size.height * 0.25,
-                            decoration: Styles().imageContainerDecrationWithOutImage(),
-                            child:
-                                context.watch<RoomPropertyBloc>().image.isEmpty
-                                    ? Center(
-                                        child: Text(
-                                          'pls add some image of this property',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .displaySmall,
+                          return Stack(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.all(20),
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                height: MediaQuery.of(context).size.height * 0.25,
+                                decoration:
+                                    Styles().imageContainerDecrationWithOutImage(),
+                                child:
+                                    context.watch<RoomPropertyBloc>().image.isEmpty
+                                        ? Center(
+                                            child: Text(
+                                              'pls add some image of this property',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .displaySmall,
+                                            ),
+                                          )
+                                        : Image.file(File(context
+                                            .watch<RoomPropertyBloc>()
+                                            .image[index])),
+                              ),
+                              state is ImageLoadingState ||  context
+                                                          .read<
+                                                              RoomPropertyBloc>()
+                                                          .image.isEmpty ? const  SizedBox() :Positioned(
+                                          right: 15,
+                                          top: 15,
+                                          child: InkWell(
+                                            onTap: () {
+                                              BlocProvider.of<RoomPropertyBloc>(
+                                                      context)
+                                                  .add(OnDeleteImageEvent(
+                                                      image: context
+                                                          .read<
+                                                              RoomPropertyBloc>()
+                                                          .image[index]));
+                                            },
+                                            child: Container(
+                                              height: 35,
+                                              width: 35,
+                                              decoration: BoxDecoration(
+                                                  color: ConstColors()
+                                                      .mainColorpurple,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100)),
+                                              child: const Icon(
+                                                Icons.cancel_rounded,
+                                                color: Color.fromARGB(255, 255, 255, 255),
+                                                size: 25,
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      )
-                                    : Image.file(File(context
-                                        .watch<RoomPropertyBloc>()
-                                        .image[index])),
+                            ],
                           );
                         }),
                       ),
@@ -419,7 +440,8 @@ class RoomAddingPage extends StatelessWidget {
                       ),
                       margin: const EdgeInsets.all(10),
                       child: ElevatedButton(
-                          style: Styles().elevatedButtonBorderOnlyStyle(context),
+                          style:
+                              Styles().elevatedButtonBorderOnlyStyle(context),
                           onPressed: () {
                             BlocProvider.of<RoomPropertyBloc>(context)
                                 .add(OnClickToAddMultipleImageEvent());
@@ -484,7 +506,9 @@ class RoomAddingPage extends StatelessWidget {
                                       Styles().elevatedButtonTextStyle(context),
                                 )),
                     ),
-                     SizedBox(height: MediaQuery.of(context).size.height*0.02,)
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
+                    )
                   ],
                 ),
               );

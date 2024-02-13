@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:io';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +27,16 @@ class RoomEditPage extends StatelessWidget {
   final priceController = TextEditingController();
   final bedNumberController = TextEditingController();
   final featuresController = TextEditingController();
+  final Set<String> commenFeatures = {
+    'AC',
+    'Wifi',
+    'TV',
+    'Attached Bathroom',
+    'Commen Bathroom',
+    'Swimming pool',
+    'Parking',
+    'Balcony'
+  };
 
   Timer? _debouncer;
 
@@ -234,51 +244,37 @@ class RoomEditPage extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleLarge,
                           )),
                     ),
-                    Row(
-                      children: [
-                        Padding(
+                    Wrap(
+                      children: List.generate(commenFeatures.length, (index) {
+                        return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value:
-                                    BlocProvider.of<RoomPropertyBloc>(context).ac,
-                                onChanged: (value) {
-                                  if (value == true) {
+                          child: SizedBox(
+                            width: 150,
+                            child: Row(
+                              children: [
+                                Checkbox(
+                                  value: context
+                                      .read<RoomPropertyBloc>()
+                                      .features
+                                      .contains(
+                                          commenFeatures.elementAt(index)),
+                                  onChanged: (value) {
                                     BlocProvider.of<RoomPropertyBloc>(context)
-                                        .add(OnFeatureAddingEvent(text: 'AC'));
-                                  } else {
-                                    BlocProvider.of<RoomPropertyBloc>(context)
-                                        .add(OnFeatureDeletedEvent(text: 'AC'));
-                                  }
-                                },
-                              ),
-                              const Text('AC')
-                            ],
+                                        .add(FeatureAddingByCheckedBoxEvent(
+                                            text: commenFeatures.elementAt(index)));
+                                  },
+                                ),
+                                Expanded(
+                                    child: Text(
+                                  commenFeatures.elementAt(index),
+                                  style:
+                                      Theme.of(context).textTheme.displaySmall,
+                                ))
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value:
-                                    BlocProvider.of<RoomPropertyBloc>(context).wifi,
-                                onChanged: (value) {
-                                  if (value == true) {
-                                    BlocProvider.of<RoomPropertyBloc>(context)
-                                        .add(OnFeatureAddingEvent(text: 'Wifi'));
-                                  } else {
-                                    BlocProvider.of<RoomPropertyBloc>(context)
-                                        .add(OnFeatureDeletedEvent(text: 'Wifi'));
-                                  }
-                                },
-                              ),
-                              const Text('Wifi')
-                            ],
-                          ),
-                        ),
-                      ],
+                        );
+                      }),
                     ),
                     Row(
                       children: [
@@ -389,26 +385,67 @@ class RoomEditPage extends StatelessWidget {
                                     .read<RoomPropertyBloc>()
                                     .editImage
                                     .length, (index) {
-                          return Container(
-                            margin: const EdgeInsets.all(20),
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            height: MediaQuery.of(context).size.height * 0.25,
-                            decoration: Styles().imageContainerDecrationWithOutImage(),
-                            child:state is ImageLoadingState? Lottie.asset('assets/images/imageLoading.json') : context
-                                    .watch<RoomPropertyBloc>()
-                                    .editImage
-                                    .isEmpty
-                                ? Center(
-                                    child: Text(
-                                      'pls add some image of this property',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .displaySmall,
+                          return Stack(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.all(20),
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.25,
+                                decoration: Styles()
+                                    .imageContainerDecrationWithOutImage(),
+                                child: context
+                                        .watch<RoomPropertyBloc>()
+                                        .editImage
+                                        .isEmpty
+                                    ? Center(
+                                        child: Text(
+                                          'pls add some editImage of this property',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .displaySmall,
+                                        ),
+                                      )
+                                    : Image.network(context
+                                        .watch<RoomPropertyBloc>()
+                                        .editImage[index]),
+                              ),
+                              state is ImageLoadingState ||
+                                      context
+                                          .read<RoomPropertyBloc>()
+                                          .editImage
+                                          .isEmpty
+                                  ? const SizedBox()
+                                  : Positioned(
+                                      right: 15,
+                                      top: 15,
+                                      child: InkWell(
+                                        onTap: () {
+                                          BlocProvider.of<RoomPropertyBloc>(
+                                                  context)
+                                              .add(OnDeleteEditImageEvent(
+                                                  image: context
+                                                      .read<RoomPropertyBloc>()
+                                                      .editImage[index]));
+                                        },
+                                        child: Container(
+                                          height: 35,
+                                          width: 35,
+                                          decoration: BoxDecoration(
+                                              color:
+                                                  ConstColors().mainColorpurple,
+                                              borderRadius:
+                                                  BorderRadius.circular(100)),
+                                          child: const Icon(
+                                            Icons.cancel_rounded,
+                                            color: Color.fromARGB(
+                                                255, 255, 255, 255),
+                                            size: 25,
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  )
-                                : Image.network(context
-                                    .watch<RoomPropertyBloc>()
-                                    .editImage[index]),
+                            ],
                           );
                         }),
                       ),
@@ -420,7 +457,8 @@ class RoomEditPage extends StatelessWidget {
                       ),
                       margin: const EdgeInsets.all(10),
                       child: ElevatedButton(
-                          style: Styles().elevatedButtonBorderOnlyStyle(context),
+                          style:
+                              Styles().elevatedButtonBorderOnlyStyle(context),
                           onPressed: () {
                             BlocProvider.of<RoomPropertyBloc>(context)
                                 .add(OnClickEditToAddMultipleImageEvent());
@@ -496,11 +534,11 @@ class RoomEditPage extends StatelessWidget {
                 roomIdKey.currentState!.validate();
               } else if (state is RoomDeatailsSubmittedState) {
                 Navigator.of(context).pop();
-              }
-              else if(state is ImageLoadingState){
+              } else if (state is ImageLoadingState) {
                 SnackBars().notifyingSnackBar('Image is loading', context);
-              }else if(state is MultipleImageAddedState){
-                SnackBars().successSnackBar('Image added successfully', context);
+              } else if (state is MultipleImageAddedState) {
+                SnackBars()
+                    .successSnackBar('Image added successfully', context);
               }
             },
           ),
