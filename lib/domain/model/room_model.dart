@@ -1,14 +1,20 @@
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:share_sub_admin/domain/enum/hotel_type.dart';
 
 class RoomModel {
   final String hotelId;
   final String hotelName;
   final String roomNumber;
+   String roomId;
   final int price;
   final int numberOfBed;
   final List<dynamic> features;
   final List<dynamic> images;
   final bool? availability;
+  final HotelType? roomType;
+  final LatLng? latlng;
+  final String? place;
 
   RoomModel(
       {required this.availability,
@@ -18,7 +24,12 @@ class RoomModel {
       required this.price,
       required this.numberOfBed,
       required this.features,
-      required this.images});
+      required this.images,
+      required this.roomType,
+      required this.latlng,
+      required this.place,
+      required this.roomId
+      });
 
   static Map<String, dynamic> toMap(RoomModel roomModel) {
     return {
@@ -31,11 +42,25 @@ class RoomModel {
       FirebaseFirestoreConst.firebaseFireStoreRoomFeatures: roomModel.features,
       FirebaseFirestoreConst.firebaseFireStoreRoomImages: roomModel.images,
       FirebaseFirestoreConst.firebaseFireStoreRoomAvailability:
-          roomModel.availability
+          roomModel.availability,
+          FirebaseFirestoreConst.firebaseFireStoreHotelType:roomModel.roomType.toString(),
+     FirebaseFirestoreConst.firebaseFireStoreHotelLatLng: {
+        'latitude': roomModel.latlng!.latitude,
+        'longitude': roomModel.latlng!.longitude
+      },
+      FirebaseFirestoreConst.firebaseFireStoreHotelPlace:roomModel.place,
+      FirebaseFirestoreConst.firebaseFireStoreRoomId:roomModel.roomId
     };
   }
 
   static RoomModel fromMap(Map<String, dynamic> map) {
+    HotelType hotelType;
+    if (map[FirebaseFirestoreConst.firebaseFireStoreHotelType] ==
+        'HotelType.hotel') {
+      hotelType = HotelType.hotel;
+    } else {
+      hotelType = HotelType.dormitory;
+    }
     return RoomModel(
         availability:
             map[FirebaseFirestoreConst.firebaseFireStoreRoomAvailability],
@@ -45,7 +70,12 @@ class RoomModel {
         price: map[FirebaseFirestoreConst.firebaseFireStoreRoomPrice],
         numberOfBed: map[FirebaseFirestoreConst.firebaseFireStoreNumberOfBed],
         features: map[FirebaseFirestoreConst.firebaseFireStoreRoomFeatures],
-        images: map[FirebaseFirestoreConst.firebaseFireStoreRoomImages]);
+        images: map[FirebaseFirestoreConst.firebaseFireStoreRoomImages],
+        roomType: hotelType,
+        latlng: LatLng(map['latlng']['latitude'], map['latlng']['longitude']),
+        place: map[FirebaseFirestoreConst.firebaseFireStoreHotelPlace],
+        roomId: map[FirebaseFirestoreConst.firebaseFireStoreRoomId]
+        );
   }
 }
 
@@ -57,4 +87,4 @@ class RoomModel {
 //       FirebaseFirestoreConst.firebaseFireStoreNumberOfBed: roomModel.numberOfBed,
 //       FirebaseFirestoreConst.firebaseFireStoreRoomFeatures: roomModel.features,
 //       FirebaseFirestoreConst.firebaseFireStoreRoomImages: roomModel.images,
-//       FirebaseFirestoreConst.firebaseFireStoreRoomAvailability: roomModel.availability
+//       FirebaseFirestoreConst.firebaseFireStoreRoomAvailability: roomModel.availabilitys

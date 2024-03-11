@@ -28,7 +28,7 @@ class SubAdminLoginBloc extends Bloc<SubAdminLoginEvent, SubAdminLoginState> {
       userId=event.userId;
       final instant=await FirebaseFirestore.instance.collection(FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection).doc(userId).get();
       Map<String,dynamic> data=instant.data() as Map<String,dynamic>;
-      subAdminModel=SubAdminModel.toMap(data,event.userId);
+      subAdminModel=SubAdminModel.fromMap(data,event.userId);
       log('loginSuccess');
       emit(SubAdminLoginSuccessState());
     });

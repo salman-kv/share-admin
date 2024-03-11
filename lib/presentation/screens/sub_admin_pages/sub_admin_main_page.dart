@@ -13,7 +13,7 @@ import 'package:share_sub_admin/presentation/screens/sub_admin_pages/main%20_pag
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/main%20_pages/sub_admin_home_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/main%20_pages/sub_admin_message_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/main%20_pages/sub_admin_property_page.dart';
-import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
+import 'package:share_sub_admin/presentation/widgets/common_widget.dart';
 
 class SubAdminMainPage extends StatelessWidget {
   SubAdminMainPage({ super.key});
@@ -27,8 +27,6 @@ class SubAdminMainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // context.read<SubAdminLoginBloc>().userId = userId;
-    // log('${BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.name}');
     var key=GlobalKey<ScaffoldState>();
     return BlocProvider(
       create: (context) => SubAdminMainPageBloc(),

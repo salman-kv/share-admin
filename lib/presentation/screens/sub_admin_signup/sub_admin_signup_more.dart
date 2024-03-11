@@ -199,13 +199,13 @@ class SubAdminSignUpMoreInfo extends StatelessWidget {
                                         .toastWidget('pls add profile photo');
                                     return;
                                   } else if (formKey.currentState!.validate()) {
-                                    log('validate successfull');
                                     BlocProvider.of<SubAdminSignUpBloc>(context)
                                         .add(OnlyForLoadingevent());
                                     final imageUrl = await SubAdminFunction()
                                         .uploadImageToFirebase(context
                                             .read<SubAdminSignUpBloc>()
                                             .image!);
+  
                                     // ignore: use_build_context_synchronously
                                     BlocProvider.of<SubAdminSignUpBloc>(context).add(
                                         OnVarifySubAdminDetailsEvent(

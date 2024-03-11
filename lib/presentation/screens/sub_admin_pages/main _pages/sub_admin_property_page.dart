@@ -10,7 +10,7 @@ import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/hotel_property/property_adding_page.dart';
-import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
+import 'package:share_sub_admin/presentation/widgets/common_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 class SubAdminPropertyPage extends StatelessWidget {
@@ -46,10 +46,16 @@ class SubAdminPropertyPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Lottie.asset('assets/images/property.json'),
-                      const SizedBox(height: 20,),
-                      Text('No property found',style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Colors.grey
-                      ),)
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        'No property found',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(color: Colors.grey),
+                      )
                     ],
                   );
                 }
@@ -67,7 +73,8 @@ class SubAdminPropertyPage extends StatelessWidget {
                               singelSnapshot.data!.data()
                                   as Map<String, dynamic>;
                           MainPropertyModel singleData =
-                              MainPropertyModel.fromMap(convertedeData);
+                              MainPropertyModel.fromMap(
+                                  convertedeData, singelSnapshot.data!.id);
                           return CommonWidget().hotelShowingContainer(
                               context, singleData, hotelList[index]);
                         } else {

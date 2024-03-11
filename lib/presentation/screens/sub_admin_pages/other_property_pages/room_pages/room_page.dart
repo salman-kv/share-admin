@@ -10,7 +10,7 @@ import 'package:share_sub_admin/application/room_property_bloc/room_property_sta
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_adding_page.dart';
-import 'package:share_sub_admin/presentation/widgets/commen_widget.dart';
+import 'package:share_sub_admin/presentation/widgets/common_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 class RoomShowingPage extends StatelessWidget {

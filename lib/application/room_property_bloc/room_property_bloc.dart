@@ -67,6 +67,7 @@ class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
       emit(RoomDeatailsSubmittingLoadingState());
       final returnimage =
           await SubAdminFunction().uploadListImageToFirebase(image);
+          log('befor model');
       final RoomModel roomModel = RoomModel(
           hotelId: hotelId!,
           hotelName: propertyModel!.propertyNmae,
@@ -75,7 +76,13 @@ class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
           numberOfBed: numberOfBed!,
           features: features,
           images: returnimage,
-          availability: true);
+          availability: true,
+          roomType: propertyModel!.hotelType,
+          latlng: propertyModel!.latLng,
+          place: propertyModel!.place,
+          roomId: ''
+          );
+          log('after model');
       String roomId =
           await SubAdminFunction().addSubAdminRoomDeatails(roomModel);
       SubAdminFunction().addRoomlIdToHotelDocument(hotelId!, roomId);
@@ -91,7 +98,12 @@ class RoomPropertyBloc extends Bloc<RoomPropertyEvent, RoomPropertyState> {
           numberOfBed: numberOfBed!,
           features: features,
           images: editImage,
-          availability: true);
+          availability: true,
+          roomType: propertyModel!.hotelType,
+          latlng: propertyModel!.latLng,
+          place: propertyModel!.place,
+          roomId: ''
+          );
       await SubAdminFunction()
           .addSubAdminEditedRoomDeatails(roomModel, event.roomId);
       emit(RoomDeatailsSubmittedState());

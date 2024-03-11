@@ -63,9 +63,9 @@ class LocationPicking extends StatelessWidget {
                           : initialCameraPosition,
                   mapType: MapType.normal,
                   onMapCreated: (controller) {
-                    log('on map create');
                     _controller = controller;
                     if (position != null) {
+                        log('on map create');
                       _controller!.animateCamera(
                         CameraUpdate.newCameraPosition(
                           CameraPosition(

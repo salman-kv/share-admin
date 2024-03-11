@@ -17,7 +17,7 @@ class SubAdminModel {
       required this.phone,
       required this.imagePath});
 
-  Map<String, dynamic> fromMap() {
+  Map<String, dynamic> toMaps() {
     return {
       "email": email,
       "name": name,
@@ -27,7 +27,7 @@ class SubAdminModel {
     };
   }
 
-  static SubAdminModel toMap(Map<String, dynamic> map,String userid) {
+  static SubAdminModel fromMap(Map<String, dynamic> map,String userid) {
     return SubAdminModel(
         userId: userid,
         email: map["email"],

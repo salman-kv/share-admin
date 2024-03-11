@@ -1,10 +1,10 @@
-import 'dart:developer';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/enum/hotel_type.dart';
 
 class MainPropertyModel {
+  final String? id;
   final String propertyNmae;
   final String place;
   final HotelType hotelType;
@@ -18,7 +18,9 @@ class MainPropertyModel {
       required this.hotelType,
       required this.latLng,
       required this.image,
-      required this.rooms});
+      required this.rooms,
+      this.id
+      });
 
   Map<String, dynamic> toMap() {
     return {
@@ -33,7 +35,7 @@ class MainPropertyModel {
     };
   }
 
-  static MainPropertyModel fromMap(Map<String, dynamic> map) {
+  static MainPropertyModel fromMap(Map<String, dynamic> map,String id) {
     HotelType hotelType;
     if (map[FirebaseFirestoreConst.firebaseFireStoreHotelType] ==
         'HotelType.hotel') {
@@ -41,19 +43,14 @@ class MainPropertyModel {
     } else {
       hotelType = HotelType.dormitory;
     }
-    log(LatLng(
-            map[FirebaseFirestoreConst.firebaseFireStoreHotelLatLng]
-                ['latitude'],
-            map[FirebaseFirestoreConst.firebaseFireStoreHotelLatLng]
-                ['longitude'])
-        .toString());
     return MainPropertyModel(
         propertyNmae: map[FirebaseFirestoreConst.firebaseFireStoreHotelName],
         place: map[FirebaseFirestoreConst.firebaseFireStoreHotelPlace],
         hotelType: hotelType,
         latLng: LatLng(map['latlng']['latitude'], map['latlng']['longitude']),
         image: map[FirebaseFirestoreConst.firebaseFireStoreHotelImages],
-        rooms: map[FirebaseFirestoreConst.firebaseFireStoreRooms]??[]
+        rooms: map[FirebaseFirestoreConst.firebaseFireStoreRooms]??[],
+        id: id
         );
   }
 }

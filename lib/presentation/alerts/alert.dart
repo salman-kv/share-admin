@@ -91,4 +91,61 @@ class Alerts {
           );
         });
   }
+  check(
+      {required BuildContext context,
+      Function? function,
+      dynamic param}) {
+        log('${function}');
+        log('${param.runtimeType}');
+    return showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            backgroundColor: const Color.fromARGB(255, 238, 237, 235),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            title: Column(
+              children: [
+                const Icon(
+                  Icons.warning,
+                  color: Color.fromARGB(255, 244, 67, 54),
+                  size: 29,
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Text(
+                  'hhhhhhhhh',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.displayMedium,
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'No',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(color: Colors.red),
+                  )),
+              TextButton(
+                  onPressed: () async {
+                    function!(param);
+                  },
+                  child: Text(
+                    'Yes',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(color: Colors.green),
+                  )),
+            ],
+          );
+        });
+  }
 }

@@ -7,9 +7,6 @@ import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_sign
 import 'package:share_sub_admin/domain/functions/shared_prefrence.dart';
 import 'package:share_sub_admin/firebase_options.dart';
 import 'package:share_sub_admin/presentation/screens/splash_screen/splash_screen.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_login/sub_admin_login_page.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/sub_admin_main_page.dart';
-import 'package:share_sub_admin/presentation/screens/welcome_sub_admin/welcome_sub_admin.dart';
 import 'presentation/theme/sub_admin_theme.dart';
 
 void main() async {

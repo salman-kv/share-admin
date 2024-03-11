@@ -480,7 +480,7 @@ class RoomAddingPage extends StatelessWidget {
                                   .image
                                   .isEmpty) {
                                 SnackBars().errorSnackBar(
-                                    'Pleas enter atleast one image o this room',
+                                    'Pleas enter atleast one image of this room',
                                     context);
                                 return;
                               }

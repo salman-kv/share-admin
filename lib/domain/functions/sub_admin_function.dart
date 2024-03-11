@@ -3,14 +3,17 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/functions/shared_prefrence.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
+import 'package:share_sub_admin/domain/model/room_booking_model.dart';
 import 'package:share_sub_admin/domain/model/room_model.dart';
 import 'package:share_sub_admin/domain/model/sub_admin_model.dart';
 import 'package:share_sub_admin/presentation/alerts/toasts.dart';
@@ -26,7 +29,7 @@ class SubAdminFunction {
     final instant = FirebaseFirestore.instance
         .collection(FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection);
     await instant.where(compire, isEqualTo: subAdminModel.email).get();
-    final result = await instant.add(subAdminModel.fromMap());
+    final result = await instant.add(subAdminModel.toMaps());
     return result.id;
   }
   // add hotel deatails to firestore
@@ -87,6 +90,10 @@ class SubAdminFunction {
     final instant = FirebaseFirestore.instance
         .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection);
     final result = await instant.add(RoomModel.toMap(roomModel));
+    roomModel.roomId = result.id;
+    log('id stroing');
+    log('${roomModel.roomId}');
+    await instant.doc(result.id).update(RoomModel.toMap(roomModel));
     return result.id;
   }
 
@@ -156,7 +163,9 @@ class SubAdminFunction {
   // store image in to image path in firebase and send back the download url as image url
 
   uploadImageToFirebase(XFile xfile) async {
-    final ref = FirebaseStorage.instance.ref('image').child(xfile.name);
+    final ref = FirebaseStorage.instance
+        .ref(FirebaseFirestoreConst.firebaseFireStoreImages)
+        .child(xfile.name);
     await ref.putFile(File(xfile.path));
     final imageUrl = await ref.getDownloadURL();
     return imageUrl;
@@ -336,13 +345,169 @@ class SubAdminFunction {
   }
 
   // root to edit page with future
-  hotelEditPage(
-      BuildContext context, MainPropertyModel propertyModel, String hotelId) async {
+  hotelEditPage(BuildContext context, MainPropertyModel propertyModel,
+      String hotelId) async {
     return Navigator.of(context).push(MaterialPageRoute(builder: (ctx) {
       return PropertyAddingPage(
         hotelId: hotelId,
         propertyModel: propertyModel,
       );
     }));
+  }
+
+  // copy with function for removing the time
+
+  removingTimeFromDatetime({required DateTime dateTime}) {
+    return dateTime.copyWith(
+        hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+  }
+
+// convert datetime to date only
+  dateTimeToDateOnly({required DateTime dateTime}) {
+    return DateFormat('d MMMM yyyy').format(dateTime);
+  }
+
+// room confirm or accept button click
+
+  roomAcceptButtonClick({required RoomBookingModel roomBookingModel}) async {
+// user instance
+    var instanceOfUser = FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection)
+        .doc(roomBookingModel.userId);
+// change the checkin time to current time
+    roomBookingModel.checkInCheckOutModel?.checkInTime = DateTime.now();
+    roomBookingModel.checkInCheckOutModel?.request = FirebaseFirestoreConst
+        .firebaseFireStoreCheckInORcheckOutRequestForCheckInDone;
+// delete the room booking deatails from the booked room to current room (current enroled room)
+    await instanceOfUser
+        .collection(
+            FirebaseFirestoreConst.firebaseFireStoreCurrentBookedRoomCollection)
+        .doc(roomBookingModel.bookingId)
+        .delete();
+    await instanceOfUser
+        .collection(FirebaseFirestoreConst.firebaseFireStoreCurrentUserRoom)
+        .add(roomBookingModel.toMap());
+
+// add to the current room collection in room side
+    await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+        .doc(roomBookingModel.roomId)
+        .collection(
+            FirebaseFirestoreConst.firebaseFireStoreCurrentUserCheckInRoom)
+        .add(roomBookingModel.toMap());
+    // change data from the bookingdeatails in room
+    var roomInstance = await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+        .doc(roomBookingModel.roomId)
+        .get();
+    List<dynamic> list = roomInstance
+        .data()![FirebaseFirestoreConst.firebaseFireStoreBookingDeatails];
+    // remove old data and ad new changed data
+    for (int i = 0;
+        i <
+            roomInstance
+                .data()![
+                    FirebaseFirestoreConst.firebaseFireStoreBookingDeatails]
+                .length;
+        i++) {
+      if (list[i][FirebaseFirestoreConst.firebaseFireStoreBookingId] ==
+          roomBookingModel.bookingId) {
+        list.removeAt(i);
+        break;
+      }
+    }
+    list.add(roomBookingModel.toMap());
+    // updating to the room
+    await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+        .doc(roomBookingModel.roomId)
+        .update(
+            {FirebaseFirestoreConst.firebaseFireStoreBookingDeatails: list});
+  }
+
+  // room checkout button ckiked
+  roomCheckOutButonClicked({required RoomBookingModel roomBookingModel}) async {
+    // delete from user current room
+    var userCurrentRoomDeatails = await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection)
+        .doc(roomBookingModel.userId)
+        .collection(FirebaseFirestoreConst.firebaseFireStoreCurrentUserRoom)
+        .where(FirebaseFirestoreConst.firebaseFireStoreBookingId,
+            isEqualTo: roomBookingModel.bookingId)
+        .get();
+    // delete the user current room by the id
+    FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection)
+        .doc(roomBookingModel.userId)
+        .collection(FirebaseFirestoreConst.firebaseFireStoreCurrentUserRoom)
+        .doc(userCurrentRoomDeatails.docs[0].id)
+        .delete();
+    //remove data from user booking deatails
+    var roomDeatails = await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+        .doc(roomBookingModel.roomId)
+        .get();
+    var listOfRoomBooking = roomDeatails
+        .data()![FirebaseFirestoreConst.firebaseFireStoreBookingDeatails];
+    for (int i = 0; i < listOfRoomBooking.length; i++) {
+      if (listOfRoomBooking[i]
+              [FirebaseFirestoreConst.firebaseFireStoreBookingId] ==
+          roomBookingModel.bookingId) {
+        listOfRoomBooking.removeAt(i);
+        break;
+      }
+    }
+    await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+        .doc(roomBookingModel.roomId)
+        .update({
+      FirebaseFirestoreConst.firebaseFireStoreBookingDeatails: listOfRoomBooking
+    });
+    // delete from the current user in room from room side
+    var currentUserCheckInRoom = await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+        .doc(roomBookingModel.roomId)
+        .collection(
+            FirebaseFirestoreConst.firebaseFireStoreCurrentUserCheckInRoom)
+        .get();
+    await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+        .doc(roomBookingModel.roomId)
+        .collection(
+            FirebaseFirestoreConst.firebaseFireStoreCurrentUserCheckInRoom)
+        .doc(currentUserCheckInRoom.docs[0].id)
+        .delete();
+        log('done ');
+  }
+
+  // on cancel booking function
+  roomBookingCancel({required RoomBookingModel roomBookingModel})async{
+    CollectionReference<Map<String, dynamic>> roomInstance = FirebaseFirestore
+          .instance
+          .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection);
+      await roomInstance
+          .doc(roomBookingModel.roomId)
+          .get()
+          .then((value) async {
+        for (Map<String, dynamic> i in value
+            .data()![FirebaseFirestoreConst.firebaseFireStoreBookingDeatails]) {
+          if (i[FirebaseFirestoreConst.firebaseFireStoreBookingId] ==
+              roomBookingModel.bookingId) {
+            roomInstance.doc(roomBookingModel.roomId).update({
+              FirebaseFirestoreConst.firebaseFireStoreBookingDeatails:
+                  FieldValue.arrayRemove([i])
+            });
+          }
+        }
+      });
+
+      var userInstance = FirebaseFirestore.instance
+          .collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection);
+      await userInstance
+          .doc(roomBookingModel.userId)
+          .collection(FirebaseFirestoreConst
+              .firebaseFireStoreCurrentBookingAndPayAtHotelRoomCollection)
+          .doc(roomBookingModel.bookingId)
+          .delete();
   }
 }
