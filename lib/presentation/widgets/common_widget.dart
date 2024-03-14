@@ -2,8 +2,13 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
+import 'package:share_sub_admin/application/booking_page_bloc/booking_page_bloc.dart';
+import 'package:share_sub_admin/application/booking_page_bloc/booking_page_event.dart';
+import 'package:share_sub_admin/application/booking_page_bloc/booking_page_state.dart';
 import 'package:share_sub_admin/application/room_property_bloc/room_property_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_bloc.dart';
+import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_state.dart';
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/enum/hotel_type.dart';
 import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
@@ -12,8 +17,11 @@ import 'package:share_sub_admin/domain/model/room_booking_model.dart';
 import 'package:share_sub_admin/domain/model/room_model.dart';
 import 'package:share_sub_admin/domain/model/user_model.dart';
 import 'package:share_sub_admin/presentation/alerts/alert.dart';
+import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/history_page/history_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/hotel_property/property_adding_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/profile/profile_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_edit_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/single_room_showing_page.dart';
@@ -579,143 +587,188 @@ class CommonWidget {
           MediaQuery.of(context).platformBrightness == Brightness.dark
               ? const Color.fromARGB(150, 255, 255, 255)
               : const Color.fromARGB(150, 0, 0, 0),
-      child: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(10),
-            height: MediaQuery.of(context).size.width * 0.45,
-            width: MediaQuery.of(context).size.width * 0.45,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(
-                Radius.circular(150),
+      child: BlocBuilder<SubAdminLoginBloc, SubAdminLoginState>(
+        builder: (context, state) {
+          return Column(
+            children: [
+              Container(
+                  margin: const EdgeInsets.all(10),
+                  height: MediaQuery.of(context).size.width * 0.45,
+                  width: MediaQuery.of(context).size.width * 0.45,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(150),
+                    ),
+                  ),
+                  child: BlocProvider.of<SubAdminLoginBloc>(context)
+                              .subAdminModel ==
+                          null
+                      ? null
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(1000),
+                          child: CommonWidget().profileNetworkImage(
+                              context: context,
+                              image: BlocProvider.of<SubAdminLoginBloc>(context)
+                                  .subAdminModel!
+                                  .imagePath),
+                        )),
+              Text(
+                BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.name,
+                style: Theme.of(context).textTheme.labelLarge,
               ),
-              image: DecorationImage(
-                  image: NetworkImage(
-                      BlocProvider.of<SubAdminLoginBloc>(context)
-                          .subAdminModel!
-                          .imagePath),
-                  fit: BoxFit.cover),
-            ),
-          ),
-          Text(
-            BlocProvider.of<SubAdminLoginBloc>(context).subAdminModel!.name,
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InkWell(
-                  onTap: () {},
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.person_2_rounded,
-                          size: 30,
-                          color: Colors.grey,
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) {
+                            return const ProfilePage();
+                          },
+                        ));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 7),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.person_2_rounded,
+                              size: 30,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.01,
+                            ),
+                            Text(
+                              'Profile',
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                          ],
                         ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.01,
-                        ),
-                        Text(
-                          'Profile',
-                          style: Theme.of(context).textTheme.labelMedium,
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                     InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) {
+                            return const HistoryPage();
+                          },
+                        ));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 7),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.history,
+                              size: 30,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.01,
+                            ),
+                            Text(
+                              'History',
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 7),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.security_rounded,
+                              size: 30,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.01,
+                            ),
+                            Text(
+                              'Privacy policy',
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 7),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.privacy_tip_rounded,
+                              size: 30,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.01,
+                            ),
+                            Text(
+                              'Terms & Condition',
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Alerts()
+                            .dialgForDelete(context: context, type: 'logOut');
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 7),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 7),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: MediaQuery.of(context).platformBrightness ==
+                                  Brightness.light
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.logout_outlined,
+                              size: 30,
+                              color: Color.fromARGB(255, 214, 6, 6),
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.01,
+                            ),
+                            Text(
+                              'Log Out',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium!
+                                  .copyWith(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                InkWell(
-                  onTap: () {},
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.security_rounded,
-                          size: 30,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.01,
-                        ),
-                        Text(
-                          'Privacy policy',
-                          style: Theme.of(context).textTheme.labelMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.privacy_tip_rounded,
-                          size: 30,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.01,
-                        ),
-                        Text(
-                          'Terms & Condition',
-                          style: Theme.of(context).textTheme.labelMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Alerts().dialgForDelete(context: context, type: 'logOut');
-                  },
-                  child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: MediaQuery.of(context).platformBrightness ==
-                              Brightness.light
-                          ? Colors.white
-                          : Colors.black,
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.logout_outlined,
-                          size: 30,
-                          color: Color.fromARGB(255, 214, 6, 6),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.01,
-                        ),
-                        Text(
-                          'Log Out',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelMedium!
-                              .copyWith(color: Colors.red),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
+              )
+            ],
+          );
+        },
       ),
     );
   }
@@ -723,175 +776,212 @@ class CommonWidget {
   pendingVerificationRoomContainer(
       {required RoomBookingModel roomBookingModel,
       required BuildContext context}) {
-    return GestureDetector(
-      onTap: () {},
-      child: Container(
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              ConstColors().mainColorpurple.withOpacity(0.4),
-              ConstColors().main2Colorpur.withOpacity(0.2),
-            ]),
-            borderRadius: const BorderRadius.all(Radius.circular(20))),
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection(
-                  FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
-              .doc(roomBookingModel.roomId)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+    return BlocConsumer<BookingPageBloc, BookingPageState>(
+      listener: (context, state) {
+        if (state is CheckInSuccessState) {
+          SnackBars().successSnackBar('Check in success', context);
+        } else if (state is CheckoutSuccessState) {
+          SnackBars().successSnackBar('Check out success', context);
+        }
+      },
+      builder: (context, state) {
+        return GestureDetector(
+          onTap: () {},
+          child: Container(
+            margin: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  ConstColors().mainColorpurple.withOpacity(0.4),
+                  ConstColors().main2Colorpur.withOpacity(0.2),
+                ]),
+                borderRadius: const BorderRadius.all(Radius.circular(20))),
+            child: StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection(
+                      FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+                  .doc(roomBookingModel.roomId)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          height: MediaQuery.of(context).size.width * 0.3,
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(20)),
-                              image: DecorationImage(
-                                  image: NetworkImage(roomBookingModel.image),
-                                  fit: BoxFit.fill)),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                snapshot.data!.data()![FirebaseFirestoreConst
-                                    .firebaseFireStoreHotelName],
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              Text(
-                                snapshot.data!
-                                    .data()![FirebaseFirestoreConst
-                                        .firebaseFireStoreRoomNumber]
-                                    .toString(),
-                                style: Theme.of(context).textTheme.titleSmall,
-                              ),
-                              Text(
-                                '₹ ${roomBookingModel.price}',
-                                style: Theme.of(context).textTheme.titleSmall,
-                              ),
-                              Column(
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              height: MediaQuery.of(context).size.width * 0.3,
+                              width: MediaQuery.of(context).size.width * 0.4,
+                              decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(20)),
+                                  image: DecorationImage(
+                                      image:
+                                          NetworkImage(roomBookingModel.image),
+                                      fit: BoxFit.fill)),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    '${SubAdminFunction().dateTimeToDateOnly(dateTime: roomBookingModel.bookedDate['start']!)}  1:00 PM',
+                                    snapshot.data!.data()![
+                                        FirebaseFirestoreConst
+                                            .firebaseFireStoreHotelName],
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                  Text(
+                                    snapshot.data!
+                                        .data()![FirebaseFirestoreConst
+                                            .firebaseFireStoreRoomNumber]
+                                        .toString(),
                                     style:
                                         Theme.of(context).textTheme.titleSmall,
                                   ),
                                   Text(
-                                    'To',
-                                    textAlign: TextAlign.center,
+                                    '₹ ${roomBookingModel.price}',
                                     style:
                                         Theme.of(context).textTheme.titleSmall,
                                   ),
-                                  Text(
-                                    '${SubAdminFunction().dateTimeToDateOnly(dateTime: roomBookingModel.bookedDate['end']!)}  11:30 AM',
-                                    style:
-                                        Theme.of(context).textTheme.titleSmall,
+                                  Column(
+                                    children: [
+                                      Text(
+                                        '${SubAdminFunction().dateTimeToDateOnly(dateTime: roomBookingModel.bookedDate['start']!)}  1:00 PM',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall,
+                                      ),
+                                      Text(
+                                        'To',
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall,
+                                      ),
+                                      Text(
+                                        '${SubAdminFunction().dateTimeToDateOnly(dateTime: roomBookingModel.bookedDate['end']!)}  11:30 AM',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall,
+                                      ),
+                                      roomBookingModel.checkInCheckOutModel
+                                                  ?.request ==
+                                              FirebaseFirestoreConst
+                                                  .firebaseFireStoreCheckInORcheckOutRequestForCheckOutWaiting
+                                          ? Container(
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.04,
+                                              decoration: Styles()
+                                                  .elevatedButtonDecoration(),
+                                              child: ElevatedButton(
+                                                  style: Styles()
+                                                      .elevatedButtonStyle(),
+                                                  onPressed: () {
+                                                    BlocProvider.of<
+                                                                BookingPageBloc>(
+                                                            context)
+                                                        .add(OnCheckoutButtonClicked(
+                                                            context: context,
+                                                            roomBookingModel:
+                                                                roomBookingModel));
+                                                  },
+                                                  child: state
+                                                          is CheckoutLoadingState
+                                                      ? const CircularProgressIndicator()
+                                                      : Text(
+                                                          'Accept CheckOut',
+                                                          style: Theme.of(
+                                                                  context)
+                                                              .textTheme
+                                                              .titleSmall!
+                                                              .copyWith(
+                                                                  color: Colors
+                                                                      .white),
+                                                        )),
+                                            )
+                                          : Container(
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.04,
+                                              decoration: Styles()
+                                                  .elevatedButtonDecoration(),
+                                              child: ElevatedButton(
+                                                  style: Styles()
+                                                      .elevatedButtonStyle(),
+                                                  onPressed: () {
+                                                    BlocProvider.of<
+                                                                BookingPageBloc>(
+                                                            context)
+                                                        .add(OnCheckInButtonClicked(
+                                                            context: context,
+                                                            roomBookingModel:
+                                                                roomBookingModel));
+                                                  },
+                                                  child: state
+                                                          is CheckInLoadingState
+                                                      ? const CircularProgressIndicator(
+                                                          color: Colors.white,
+                                                        )
+                                                      : Text(
+                                                          'Accept CheckIn',
+                                                          style: Theme.of(
+                                                                  context)
+                                                              .textTheme
+                                                              .titleSmall!
+                                                              .copyWith(
+                                                                  color: Colors
+                                                                      .white),
+                                                        )),
+                                            )
+                                    ],
                                   ),
-                                  roomBookingModel
-                                              .checkInCheckOutModel?.request ==
-                                          FirebaseFirestoreConst
-                                              .firebaseFireStoreCheckInORcheckOutRequestForCheckOutWaiting
-                                      ? Container(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.04,
-                                          decoration: Styles()
-                                              .elevatedButtonDecoration(),
-                                          child: ElevatedButton(
-                                              style: Styles()
-                                                  .elevatedButtonStyle(),
-                                              onPressed: () {
-                                                SubAdminFunction()
-                                                    .roomCheckOutButonClicked(
-                                                        roomBookingModel:
-                                                            roomBookingModel);
-                                              },
-                                              child: Text(
-                                                'Accept CheckOut',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleSmall!
-                                                    .copyWith(
-                                                        color: Colors.white),
-                                              )),
-                                        )
-                                      : Container(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.04,
-                                          decoration: Styles()
-                                              .elevatedButtonDecoration(),
-                                          child: ElevatedButton(
-                                              style: Styles()
-                                                  .elevatedButtonStyle(),
-                                              onPressed: () {
-                                                SubAdminFunction()
-                                                    .roomAcceptButtonClick(
-                                                        roomBookingModel:
-                                                            roomBookingModel);
-                                              },
-                                              child: Text(
-                                                'Accept CheckIn',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleSmall!
-                                                    .copyWith(
-                                                        color: Colors.white),
-                                              )),
-                                        )
                                 ],
                               ),
-                            ],
-                          ),
-                        ),
+                            ),
+                          )
+                        ],
+                      ),
+                      StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection(FirebaseFirestoreConst
+                                .firebaseFireStoreUserCollection)
+                            .doc(roomBookingModel.userId)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          log('pending building');
+                          if (snapshot.hasData) {
+                            if (snapshot.data!.exists) {
+                              return CommonWidget().userShowingContainer(
+                                  context: context,
+                                  userModel: UserModel.fromMap(
+                                      snapshot.data!.data()!,
+                                      roomBookingModel.userId));
+                            } else {
+                              return Text('no data');
+                            }
+                          } else {
+                            return Text('no data');
+                          }
+                        },
                       )
                     ],
-                  ),
-                  StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection(FirebaseFirestoreConst
-                            .firebaseFireStoreUserCollection)
-                        .doc(roomBookingModel.userId)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      log('pending building');
-                      if (snapshot.hasData) {
-                        if (snapshot.data!.exists) {
-                          return CommonWidget().userShowingContainer(
-                              context: context,
-                              userModel: UserModel.fromMap(
-                                  snapshot.data!.data()!,
-                                  roomBookingModel.userId));
-                        } else {
-                          return Text('no data');
-                        }
-                      } else {
-                        return Text('no data');
-                      }
-                    },
-                  )
-                ],
-              );
-            } else {
-              return const CircularProgressIndicator();
-            }
-          },
-        ),
-      ),
+                  );
+                } else {
+                  return const CircularProgressIndicator();
+                }
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1000,6 +1090,7 @@ class CommonWidget {
                           style: Styles().deleteElevatedButtonStyle(),
                           onPressed: () async {
                             SubAdminFunction().roomBookingCancel(
+                                context: context,
                                 roomBookingModel: roomBookingModel);
                           },
                           child: Text(
@@ -1202,6 +1293,170 @@ class CommonWidget {
           },
         ),
       ),
+    );
+  }
+// history container
+  historyContainer(
+      {required RoomBookingModel roomBookingModel,
+      required BuildContext context}) {
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [
+              ConstColors().mainColorpurple.withOpacity(0.4),
+              ConstColors().main2Colorpur.withOpacity(0.2),
+            ]),
+            borderRadius: const BorderRadius.all(Radius.circular(20))),
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection(
+                  FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+              .doc(roomBookingModel.roomId)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data != null) {
+                return Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: MediaQuery.of(context).size.width * 0.3,
+                            width: MediaQuery.of(context).size.width * 0.4,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(20)),
+                                image: DecorationImage(
+                                    image: NetworkImage(roomBookingModel.image),
+                                    fit: BoxFit.fill)),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  snapshot.data!.data()![FirebaseFirestoreConst
+                                      .firebaseFireStoreHotelName],
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                                Text(
+                                  snapshot.data!
+                                      .data()![FirebaseFirestoreConst
+                                          .firebaseFireStoreRoomNumber]
+                                      .toString(),
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                Text(
+                                  '₹ ${roomBookingModel.price}',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                Column(
+                                  children: [
+                                    Text(
+                                      '${SubAdminFunction().dateTimeToDateOnly(dateTime: roomBookingModel.bookedDate['start']!)}  1:00 PM',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
+                                    Text(
+                                      'To',
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
+                                    Text(
+                                      '${SubAdminFunction().dateTimeToDateOnly(dateTime: roomBookingModel.bookedDate['end']!)}  11:30 AM',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection(FirebaseFirestoreConst
+                              .firebaseFireStoreUserCollection)
+                          .doc(roomBookingModel.userId)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        log('biuliding booked');
+                        if (snapshot.hasData) {
+                          if (snapshot.data!.exists) {
+                            return CommonWidget().userShowingContainer(
+                                context: context,
+                                userModel: UserModel.fromMap(
+                                    snapshot.data!.data()!,
+                                    roomBookingModel.userId));
+                          } else {
+                            return Text('no data');
+                          }
+                        } else {
+                          return Text('no data');
+                        }
+                      },
+                    )
+                  ],
+                );
+              } else {
+                return Text('no data');
+              }
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  // no data widget
+  noDataWidget({required String text, required BuildContext context}) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Lottie.asset('assets/images/no data found.json'),
+        Text(
+          text,
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium!
+              .copyWith(color: Colors.grey),
+        )
+      ],
+    );
+  }
+
+  // profile network image
+  profileNetworkImage({required BuildContext context, required String image}) {
+    return Image.network(
+      image,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) {
+          return child;
+        } else {
+          return Lottie.asset('assets/images/profile_loading.json');
+        }
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return Image.asset('assets/images/profile.png');
+      },
     );
   }
 }

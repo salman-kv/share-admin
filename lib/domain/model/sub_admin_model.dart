@@ -1,10 +1,10 @@
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 
 class SubAdminModel {
-  final String name;
+  String name;
   final String password;
-  final int phone;
-  final String imagePath;
+  int phone;
+  String imagePath;
   final String email;
   String? userId;
   List<String>? hotels;
@@ -27,7 +27,7 @@ class SubAdminModel {
     };
   }
 
-  static SubAdminModel fromMap(Map<String, dynamic> map,String userid) {
+  static SubAdminModel fromMap(Map<String, dynamic> map, String userid) {
     return SubAdminModel(
         userId: userid,
         email: map["email"],

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_sub_admin/application/booking_page_bloc/booking_page_event.dart';
 import 'package:share_sub_admin/application/booking_page_bloc/booking_page_state.dart';
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
+import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
 import 'package:share_sub_admin/domain/model/room_booking_model.dart';
 
 class BookingPageBloc extends Bloc<BookingPageEvent, BookingPageState> {
@@ -49,13 +50,21 @@ class BookingPageBloc extends Bloc<BookingPageEvent, BookingPageState> {
                 .firebaseFireStoreCheckInORcheckOutRequestForCheckInWaiting) {
           verificationPendingRooms.add(i);
         }
-        //  else if (i.checkInCheckOutModel!.request ==
-        //     FirebaseFirestoreConst
-        //         .firebaseFireStoreCheckInORcheckOutRequestForCheckOutWaiting) {
-        //   checkOutVerificationPendingRooms.add(i);
-        // }
       }
       emit(BookingShufleSuccessState());
+    });
+    on<OnCheckoutButtonClicked>((event, emit) {
+      emit(CheckoutLoadingState());
+      log('checkout button clicked succefully');
+      SubAdminFunction().roomCheckOutButonClicked(
+          context: event.context, roomBookingModel: event.roomBookingModel);
+      emit(CheckoutSuccessState());
+    });
+    on<OnCheckInButtonClicked>((event, emit) {
+      emit(CheckInLoadingState());
+      SubAdminFunction().roomAcceptButtonClick(
+          context: event.context, roomBookingModel: event.roomBookingModel);
+      emit(CheckInSuccessState());
     });
   }
 }

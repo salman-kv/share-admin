@@ -30,3 +30,12 @@ class SubAdminCheckingEvent extends SubAdminLoginEvent{
 
   SubAdminCheckingEvent({required this.userId});
 }
+class OnProfileUpdatingState extends SubAdminLoginEvent{
+  final String userName;
+  final String phone; 
+  final String imagePath;
+
+  OnProfileUpdatingState({required this.userName, required this.phone, required this.imagePath}); 
+
+}
+class OnImageUpdatingEvent extends SubAdminLoginEvent{}

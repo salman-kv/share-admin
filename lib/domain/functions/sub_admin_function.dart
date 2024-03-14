@@ -11,11 +11,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
+import 'package:share_sub_admin/domain/functions/history_function.dart';
 import 'package:share_sub_admin/domain/functions/shared_prefrence.dart';
+import 'package:share_sub_admin/domain/functions/time_notification_function.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
 import 'package:share_sub_admin/domain/model/room_booking_model.dart';
 import 'package:share_sub_admin/domain/model/room_model.dart';
 import 'package:share_sub_admin/domain/model/sub_admin_model.dart';
+import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/alerts/toasts.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_login/sub_admin_login_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/hotel_property/property_adding_page.dart';
@@ -369,7 +372,9 @@ class SubAdminFunction {
 
 // room confirm or accept button click
 
-  roomAcceptButtonClick({required RoomBookingModel roomBookingModel}) async {
+  roomAcceptButtonClick(
+      {required RoomBookingModel roomBookingModel,
+      required BuildContext context}) async {
 // user instance
     var instanceOfUser = FirebaseFirestore.instance
         .collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection)
@@ -423,10 +428,21 @@ class SubAdminFunction {
         .doc(roomBookingModel.roomId)
         .update(
             {FirebaseFirestoreConst.firebaseFireStoreBookingDeatails: list});
+    // add notification
+    await NotificationFunction().notificationFunction(
+        roomBookingModel: roomBookingModel,
+        notificationPurpose: 'Accept check in',
+        notificationData: 'your room check in accepted by the owner');
+    // snack bar
+    SnackBars().successSnackBar('Booking accepted successfully', context);
   }
 
   // room checkout button ckiked
-  roomCheckOutButonClicked({required RoomBookingModel roomBookingModel}) async {
+  roomCheckOutButonClicked(
+      {required RoomBookingModel roomBookingModel,
+      required BuildContext context}) async {
+    // notification adding
+
     // delete from user current room
     var userCurrentRoomDeatails = await FirebaseFirestore.instance
         .collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection)
@@ -436,7 +452,7 @@ class SubAdminFunction {
             isEqualTo: roomBookingModel.bookingId)
         .get();
     // delete the user current room by the id
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection)
         .doc(roomBookingModel.userId)
         .collection(FirebaseFirestoreConst.firebaseFireStoreCurrentUserRoom)
@@ -477,37 +493,57 @@ class SubAdminFunction {
             FirebaseFirestoreConst.firebaseFireStoreCurrentUserCheckInRoom)
         .doc(currentUserCheckInRoom.docs[0].id)
         .delete();
-        log('done ');
+    log('done ');
+    // add notification
+    await NotificationFunction().notificationFunction(
+        roomBookingModel: roomBookingModel,
+        notificationPurpose: 'Checkout request accepted ',
+        notificationData: 'checkout room request accepted by the owner');
+    // add to booking history on user side
+    roomBookingModel.checkInCheckOutModel!.checkOutTime = DateTime.now();
+    await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection)
+        .doc(roomBookingModel.userId)
+        .collection(FirebaseFirestoreConst.firebaseFireStoreBookingHistory)
+        .add(roomBookingModel.toMap());
+    // add to booking history on sub admin side
+    HistoryFunction().historyFunction(roomBookingModel: roomBookingModel);
   }
 
   // on cancel booking function
-  roomBookingCancel({required RoomBookingModel roomBookingModel})async{
+  roomBookingCancel(
+      {required RoomBookingModel roomBookingModel,
+      required BuildContext context}) async {
     CollectionReference<Map<String, dynamic>> roomInstance = FirebaseFirestore
-          .instance
-          .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection);
-      await roomInstance
-          .doc(roomBookingModel.roomId)
-          .get()
-          .then((value) async {
-        for (Map<String, dynamic> i in value
-            .data()![FirebaseFirestoreConst.firebaseFireStoreBookingDeatails]) {
-          if (i[FirebaseFirestoreConst.firebaseFireStoreBookingId] ==
-              roomBookingModel.bookingId) {
-            roomInstance.doc(roomBookingModel.roomId).update({
-              FirebaseFirestoreConst.firebaseFireStoreBookingDeatails:
-                  FieldValue.arrayRemove([i])
-            });
-          }
+        .instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection);
+    await roomInstance.doc(roomBookingModel.roomId).get().then((value) async {
+      for (Map<String, dynamic> i in value
+          .data()![FirebaseFirestoreConst.firebaseFireStoreBookingDeatails]) {
+        if (i[FirebaseFirestoreConst.firebaseFireStoreBookingId] ==
+            roomBookingModel.bookingId) {
+          roomInstance.doc(roomBookingModel.roomId).update({
+            FirebaseFirestoreConst.firebaseFireStoreBookingDeatails:
+                FieldValue.arrayRemove([i])
+          });
         }
-      });
+      }
+    });
 
-      var userInstance = FirebaseFirestore.instance
-          .collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection);
-      await userInstance
-          .doc(roomBookingModel.userId)
-          .collection(FirebaseFirestoreConst
-              .firebaseFireStoreCurrentBookingAndPayAtHotelRoomCollection)
-          .doc(roomBookingModel.bookingId)
-          .delete();
+    var userInstance = FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection);
+    await userInstance
+        .doc(roomBookingModel.userId)
+        .collection(FirebaseFirestoreConst
+            .firebaseFireStoreCurrentBookingAndPayAtHotelRoomCollection)
+        .doc(roomBookingModel.bookingId)
+        .delete();
+    // add notification
+    await NotificationFunction().notificationFunction(
+        roomBookingModel: roomBookingModel,
+        notificationPurpose: ' Booking cancelled ',
+        notificationData: 'Your booking cancelled by owner');
+    // snack bar
+    SnackBars().errorSnackBar('Booking canceled', context);
   }
 }

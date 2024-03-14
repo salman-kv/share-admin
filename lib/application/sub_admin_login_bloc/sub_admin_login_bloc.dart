@@ -1,5 +1,3 @@
-
-
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,7 +10,6 @@ import 'package:share_sub_admin/domain/functions/sub_admin_function.dart';
 import 'package:share_sub_admin/domain/model/sub_admin_model.dart';
 import 'package:share_sub_admin/presentation/alerts/toasts.dart';
 
-
 class SubAdminLoginBloc extends Bloc<SubAdminLoginEvent, SubAdminLoginState> {
   String? userCredential;
   String? userId;
@@ -24,11 +21,15 @@ class SubAdminLoginBloc extends Bloc<SubAdminLoginEvent, SubAdminLoginState> {
       SharedPreferencesClass.setUserid(event.userId);
       SharedPreferencesClass.setUserEmail(event.userCredential);
     });
-    on<SubAdminDeatailAddingEvent>((event, emit)async{
-      userId=event.userId;
-      final instant=await FirebaseFirestore.instance.collection(FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection).doc(userId).get();
-      Map<String,dynamic> data=instant.data() as Map<String,dynamic>;
-      subAdminModel=SubAdminModel.fromMap(data,event.userId);
+    on<SubAdminDeatailAddingEvent>((event, emit) async {
+      userId = event.userId;
+      final instant = await FirebaseFirestore.instance
+          .collection(
+              FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection)
+          .doc(userId)
+          .get();
+      Map<String, dynamic> data = instant.data() as Map<String, dynamic>;
+      subAdminModel = SubAdminModel.fromMap(data, event.userId);
       log('loginSuccess');
       emit(SubAdminLoginSuccessState());
     });
@@ -48,6 +49,27 @@ class SubAdminLoginBloc extends Bloc<SubAdminLoginEvent, SubAdminLoginState> {
       } catch (e) {
         Toasts().toastWidget('$e');
       }
+    });
+    on<OnProfileUpdatingState>((event, emit) async {
+      log('calling suxxedd');
+      subAdminModel!.name = event.userName;
+      subAdminModel!.phone = int.parse(event.phone);
+      subAdminModel!.imagePath = event.imagePath;
+      await FirebaseFirestore.instance
+          .collection(FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection)
+          .doc(userId)
+          .update({
+        FirebaseFirestoreConst.firebaseFireStoreName: event.userName,
+        FirebaseFirestoreConst.firebaseFireStorePhone: int.parse(event.phone),
+        FirebaseFirestoreConst.firebaseFireStoreImage: event.imagePath
+      });
+      emit(UserDeatailsUpdatedState(image: event.imagePath));
+    });
+    on<OnImageUpdatingEvent>((event, emit) async {
+      emit(UserDeatailsUpdatingState());
+      var tempImage = await SubAdminFunction().subAdminPickImage();
+      String image = await SubAdminFunction().uploadImageToFirebase(tempImage);
+      emit(UserDeatailsUpdatedState(image: image));
     });
   }
 }

@@ -26,30 +26,32 @@ class SubAdminBookinPage extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            List<dynamic> listHotelId = snapshot
-                .data![FirebaseFirestoreConst.firebaseFireStoreHotelCollection];
-            return listHotelId.isEmpty
-                ? const Text('no hotelid list')
-                : StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection(FirebaseFirestoreConst
-                            .firebaseFireStoreRoomCollection)
-                        .where(FirebaseFirestoreConst.firebaseFireStoreHotelId,
-                            whereIn: listHotelId)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data!.docs.isNotEmpty) {
-                          List<Map<String, dynamic>> val =
-                              snapshot.data!.docs.map((e) => e.data()).toList();
-                          List<dynamic> roomIdList =
-                              snapshot.data!.docs.map((e) => e.id).toList();
-                          BlocProvider.of<BookingPageBloc>(context)
-                              .add(OnShufleRoomBooking(listOfRooms: val));
+            if (snapshot.data!.data()!.containsKey("hotel")) {
+              List<dynamic> listHotelId = snapshot.data![
+                  FirebaseFirestoreConst.firebaseFireStoreHotelCollection];
+              return listHotelId.isEmpty
+                  ? const Text('no hotelid list')
+                  : StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection(FirebaseFirestoreConst
+                              .firebaseFireStoreRoomCollection)
+                          .where(
+                              FirebaseFirestoreConst.firebaseFireStoreHotelId,
+                              whereIn: listHotelId)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data!.docs.isNotEmpty) {
+                            List<Map<String, dynamic>> val = snapshot.data!.docs
+                                .map((e) => e.data())
+                                .toList();
+                            List<dynamic> roomIdList =
+                                snapshot.data!.docs.map((e) => e.id).toList();
+                            BlocProvider.of<BookingPageBloc>(context)
+                                .add(OnShufleRoomBooking(listOfRooms: val));
 
-                          return BlocBuilder<BookingPageBloc, BookingPageState>(
-                              builder: (context, state) {
-                            if (state is BookingShufleSuccessState) {
+                            return BlocBuilder<BookingPageBloc,
+                                BookingPageState>(builder: (_, state) {
                               return ListView(
                                 children: [
                                   const Text('checkout pending'),
@@ -115,7 +117,7 @@ class SubAdminBookinPage extends StatelessWidget {
                                               context: context);
                                     }),
                                   ),
-                                  Text('payment pending'),
+                                  const Text('payment pending'),
                                   Column(
                                     children: List.generate(
                                         BlocProvider.of<BookingPageBloc>(
@@ -130,7 +132,7 @@ class SubAdminBookinPage extends StatelessWidget {
                                               context: context);
                                     }),
                                   ),
-                                  Text('booked rooms'),
+                                  const Text('booked rooms'),
                                   Column(
                                     children: List.generate(
                                         BlocProvider.of<BookingPageBloc>(
@@ -147,17 +149,19 @@ class SubAdminBookinPage extends StatelessWidget {
                                   )
                                 ],
                               );
-                            } else {
-                              return Text('no data');
-                            }
-                          });
+                            });
+                          }
                         }
-                      }
-                      return Text('teturn');
-                    },
-                  );
+                        return CommonWidget().noDataWidget(
+                            text: 'No bookings ', context: context);
+                      },
+                    );
+            } else {
+              return CommonWidget()
+                  .noDataWidget(text: 'No bookings ', context: context);
+            }
           } else {
-            return Text('sdf');
+            return const Text('no nmo no');
           }
         },
       ),

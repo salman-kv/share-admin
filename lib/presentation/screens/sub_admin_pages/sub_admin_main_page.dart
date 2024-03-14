@@ -14,6 +14,7 @@ import 'package:share_sub_admin/presentation/screens/sub_admin_pages/main%20_pag
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/main%20_pages/sub_admin_message_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/main%20_pages/sub_admin_property_page.dart';
 import 'package:share_sub_admin/presentation/widgets/common_widget.dart';
+import 'package:share_sub_admin/presentation/widgets/notification_widget.dart';
 
 class SubAdminMainPage extends StatelessWidget {
   SubAdminMainPage({ super.key});
@@ -44,14 +45,8 @@ class SubAdminMainPage extends StatelessWidget {
                       Icons.menu_outlined,
                       size: 30,
                     )),
-                actions: const [
-                  Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Icon(
-                      Icons.notifications_active_outlined,
-                      size: 28,
-                    ),
-                  )
+                actions: [
+                  NotificationWidget().notificationButton(context: context),
                 ],
               ),
               body: screens[context.watch<SubAdminMainPageBloc>().index],

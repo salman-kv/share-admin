@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_sub_admin/application/notification_bloc/notification_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_signup_bloc/sub_admin_signup_bloc.dart';
 import 'package:share_sub_admin/domain/functions/shared_prefrence.dart';
@@ -30,7 +31,11 @@ class SubAdmin extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => SubAdminSignUpBloc(),
-        ),
+        ), 
+        BlocProvider(
+          create: (context) => NotificationBloc(),
+          child: Container(),
+        )
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
