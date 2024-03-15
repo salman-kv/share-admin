@@ -51,6 +51,24 @@ class SubAdminFunction {
     final instant = FirebaseFirestore.instance
         .collection(FirebaseFirestoreConst.firebaseFireStoreHotelCollection);
     await instant.doc(hotelId).update(mainPropertyModel.toMap());
+    var val = await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+        .where(FirebaseFirestoreConst.firebaseFireStoreHotelId,
+            isEqualTo: hotelId)
+        .get();
+    for (var i in val.docs) {
+      await FirebaseFirestore.instance
+          .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+          .doc(i.id)
+          .update({
+        FirebaseFirestoreConst.firebaseFireStoreHotelName:
+            mainPropertyModel.propertyNmae,
+        FirebaseFirestoreConst.firebaseFireStoreHotelType:
+            mainPropertyModel.hotelType.toString(),
+        FirebaseFirestoreConst.firebaseFireStoreHotelPlace:
+            mainPropertyModel.place
+      });
+    }
   }
 
   addHotelIdToSubAdminDocument(String userId, String hotelId) async {
