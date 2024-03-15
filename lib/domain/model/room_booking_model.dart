@@ -14,7 +14,7 @@ class RoomBookingModel {
   final DateTime bookingTime;
   final int price;
   final Map<String, DateTime> bookedDate;
-  final PaymentModel? paymentModel;
+   PaymentModel? paymentModel;
    String? bookingId;
   CheckInCheckOutModel? checkInCheckOutModel;
 

@@ -22,7 +22,6 @@ class SubAdminMainPage extends StatelessWidget {
   List<Widget> screens = const [
     SubAdminHomePage(),
     SubAdminBookinPage(),
-    SubAdminMessagePage(),
     SubAdminPropertyPage()
   ];
 
@@ -57,12 +56,11 @@ class SubAdminMainPage extends StatelessWidget {
                         Brightness.light
                     ? Colors.white
                     : Colors.black,
-                labels: const ["Home", "Booking", "Message", "Property"],
+                labels: const ["Home", "Booking", "Property"],
                 textStyle: Theme.of(context).textTheme.displaySmall,
                 icons: const [
                   Icons.window_rounded,
                   Icons.calendar_month,
-                  Icons.message_rounded,
                   Icons.maps_home_work_rounded
                 ],
                 onTabItemSelected: (value) {

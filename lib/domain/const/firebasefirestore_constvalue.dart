@@ -21,6 +21,7 @@ class FirebaseFirestoreConst {
       'currentBookingAndPayAtHotelRoomCollection';
   static String firebaseFireStoreBookingHistory = 'bookingHistory';
 
+
   // MainProperty model consts
 
   static String firebaseFireStoreHotelPlace = 'place';

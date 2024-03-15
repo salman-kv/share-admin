@@ -47,7 +47,7 @@ class SubAdminHomePage extends StatelessWidget {
                                 context: context,
                                 hotelId: data[index]);
                           }
-                          return Text('no hotel found');
+                          return const Text('no hotel found');
                         },
                       );
                     }));

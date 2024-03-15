@@ -15,6 +15,8 @@ import 'package:share_sub_admin/domain/functions/history_function.dart';
 import 'package:share_sub_admin/domain/functions/shared_prefrence.dart';
 import 'package:share_sub_admin/domain/functions/time_notification_function.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
+import 'package:share_sub_admin/domain/model/notification_model.dart';
+import 'package:share_sub_admin/domain/model/payment_model.dart';
 import 'package:share_sub_admin/domain/model/room_booking_model.dart';
 import 'package:share_sub_admin/domain/model/room_model.dart';
 import 'package:share_sub_admin/domain/model/sub_admin_model.dart';
@@ -510,6 +512,113 @@ class SubAdminFunction {
     HistoryFunction().historyFunction(roomBookingModel: roomBookingModel);
   }
 
+  // room booking pay by cash
+  roomBookingPayByCash({required RoomBookingModel roomBookingModel}) async {
+    log('${roomBookingModel.toMap()}');
+    roomBookingModel.paymentModel = PaymentModel(
+        paymentId: 'Pay by cash',
+        paymentTime: DateTime.now(),
+        amount: roomBookingModel.price);
+    await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection)
+        .get()
+        .then((value) async {
+      for (var i in value.docs) {
+        if (i.data().containsKey('hotel')) {
+          if (i.data()['hotel'].contains(roomBookingModel.hotelId)) {
+            var subAdminData = await FirebaseFirestore.instance
+                .collection(
+                    FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection)
+                .doc(i.id)
+                .get();
+            // add to notification
+            NotificationModel notificationModel = NotificationModel(
+                opened: false,
+                notificationTime: DateTime.now(),
+                notificationPurpose: ' Booked by cash',
+                notificationData: 'Room booked and pay via online',
+                roomBookingModel: roomBookingModel);
+            await FirebaseFirestore.instance
+                .collection(
+                    FirebaseFirestoreConst.firebaseFireStoreSubAdminCollection)
+                .doc(i.id)
+                .collection(
+                    FirebaseFirestoreConst.firebaseFireStoreNotification)
+                .add(notificationModel.toMap());
+            //
+            if (subAdminData.data()!.containsKey("walletPrice")) {
+              await FirebaseFirestore.instance
+                  .collection(FirebaseFirestoreConst
+                      .firebaseFireStoreSubAdminCollection)
+                  .doc(i.id)
+                  .update({
+                "walletPrice":
+                    subAdminData["walletPrice"] + roomBookingModel.price
+              });
+            } else {
+              await FirebaseFirestore.instance
+                  .collection(FirebaseFirestoreConst
+                      .firebaseFireStoreSubAdminCollection)
+                  .doc(i.id)
+                  .update({"walletPrice": roomBookingModel.price});
+            }
+          }
+        }
+      }
+    });
+
+    // adding booking detailes to the user sub collection
+    var userInstance = FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreUserCollection);
+    await userInstance
+        .doc(roomBookingModel.userId)
+        .collection(
+            FirebaseFirestoreConst.firebaseFireStoreCurrentBookedRoomCollection)
+        .doc(roomBookingModel.bookingId)
+        .set(roomBookingModel.toMap());
+    // delete from payment peding in user side
+    await userInstance
+        .doc(roomBookingModel.userId)
+        .collection(FirebaseFirestoreConst
+            .firebaseFireStoreCurrentBookingAndPayAtHotelRoomCollection)
+        .where(FirebaseFirestoreConst.firebaseFireStoreBookingId,
+            isEqualTo: roomBookingModel.bookingId)
+        .get()
+        .then((value) async {
+      log('${value.docs.isEmpty}');
+      await userInstance
+          .doc(roomBookingModel.userId)
+          .collection(FirebaseFirestoreConst
+              .firebaseFireStoreCurrentBookingAndPayAtHotelRoomCollection)
+          .doc(value.docs[0].id)
+          .delete();
+    });
+
+    // update on room side
+    var roomDeatails = await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+        .doc(roomBookingModel.roomId)
+        .get();
+    var listOfRoomBooking = roomDeatails
+        .data()![FirebaseFirestoreConst.firebaseFireStoreBookingDeatails];
+    for (int i = 0; i < listOfRoomBooking.length; i++) {
+      if (listOfRoomBooking[i]
+              [FirebaseFirestoreConst.firebaseFireStoreBookingId] ==
+          roomBookingModel.bookingId) {
+        listOfRoomBooking.removeAt(i);
+        break;
+      }
+    }
+    listOfRoomBooking.add(roomBookingModel.toMap());
+    // listOfRoomBooking.
+    await FirebaseFirestore.instance
+        .collection(FirebaseFirestoreConst.firebaseFireStoreRoomCollection)
+        .doc(roomBookingModel.roomId)
+        .update({
+      FirebaseFirestoreConst.firebaseFireStoreBookingDeatails: listOfRoomBooking
+    });
+  }
+
   // on cancel booking function
   roomBookingCancel(
       {required RoomBookingModel roomBookingModel,
@@ -544,6 +653,7 @@ class SubAdminFunction {
         notificationPurpose: ' Booking cancelled ',
         notificationData: 'Your booking cancelled by owner');
     // snack bar
+    // ignore: use_build_context_synchronously
     SnackBars().errorSnackBar('Booking canceled', context);
   }
 }

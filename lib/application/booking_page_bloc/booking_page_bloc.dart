@@ -34,11 +34,12 @@ class BookingPageBloc extends Bloc<BookingPageEvent, BookingPageState> {
               log('${event.listOfRooms[i][FirebaseFirestoreConst.firebaseFireStoreBookingDeatails][j]}');
               allRooms.add(RoomBookingModel.fromMap(event.listOfRooms[i]
                       [FirebaseFirestoreConst.firebaseFireStoreBookingDeatails]
-                  [j]));
+                  [j]));  
             }
           }
         }
       }
+      
 
       for (RoomBookingModel i in allRooms) {
         if (i.paymentModel == null) {
@@ -49,6 +50,10 @@ class BookingPageBloc extends Bloc<BookingPageEvent, BookingPageState> {
             FirebaseFirestoreConst
                 .firebaseFireStoreCheckInORcheckOutRequestForCheckInWaiting) {
           verificationPendingRooms.add(i);
+        } else if (i.checkInCheckOutModel!.request ==
+            FirebaseFirestoreConst
+                .firebaseFireStoreCheckInORcheckOutRequestForCheckOutWaiting) {
+          checkOutVerificationPendingRooms.add(i);
         }
       }
       emit(BookingShufleSuccessState());

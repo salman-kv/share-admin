@@ -19,9 +19,12 @@ import 'package:share_sub_admin/domain/model/user_model.dart';
 import 'package:share_sub_admin/presentation/alerts/alert.dart';
 import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/booking_deatails/booking_deatails_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/history_page/history_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/hotel_property/property_adding_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/profile/profile_only.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/profile/profile_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_deatails_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_edit_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_page.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/single_room_showing_page.dart';
@@ -41,7 +44,7 @@ class CommonWidget {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           color: ConstColors().mainColorpurple.withOpacity(0.3)),
-      constraints: const BoxConstraints(minHeight: 400),
+      constraints: const BoxConstraints(minHeight: 300),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -111,7 +114,6 @@ class CommonWidget {
                   )
                 ],
               )),
-          Text('current enroled room'),
           StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection(
@@ -125,7 +127,14 @@ class CommonWidget {
                     List<dynamic> list = snapshot
                         .data![FirebaseFirestoreConst.firebaseFireStoreRooms];
                     return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 2, horizontal: 8),
+                          child: Text('current enroled room',
+                              style: Theme.of(context).textTheme.titleSmall),
+                        ),
                         Column(
                           children: List.generate(list.length, (index) {
                             return StreamBuilder(
@@ -151,15 +160,23 @@ class CommonWidget {
                                     return const SizedBox();
                                   }
                                 } else {
-                                  return Text('no rooms');
+                                  return const SizedBox();
                                 }
                               },
                             );
                           }),
                         ),
                         Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('all booked rooms'),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 2, horizontal: 8),
+                              child: Text(
+                                'All booked rooms',
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                            ),
                             Column(
                               children: List.generate(list.length, (index) {
                                 return StreamBuilder(
@@ -189,17 +206,16 @@ class CommonWidget {
                                                       [0]),
                                             );
                                           } else {
-                                            return Text('empty booking');
+                                            return const Text('empty booking');
                                           }
                                         } else {
-                                          return Text(
-                                              'this room have no booking');
+                                          return const SizedBox();
                                         }
                                       } else {
                                         return const SizedBox();
                                       }
                                     } else {
-                                      return Text('no rooms');
+                                      return const SizedBox();
                                     }
                                   },
                                 );
@@ -207,10 +223,13 @@ class CommonWidget {
                             ),
                           ],
                         ),
+                        const SizedBox(
+                          height: 4,
+                        )
                       ],
                     );
                   } else {
-                    return Text('no rooms yet');
+                    return const SizedBox();
                   }
                 } else {
                   return Text('no data');
@@ -497,41 +516,50 @@ class CommonWidget {
 
   roomShowinginHomepageHotelContainer(
       {required BuildContext context, required RoomBookingModel roomDeatails}) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 60),
-      margin: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100),
-          color: MediaQuery.of(context).platformBrightness == Brightness.light
-              ? Colors.white
-              : Colors.black),
-      child: Row(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(5),
-            height: MediaQuery.of(context).size.height * 0.07,
-            width: MediaQuery.of(context).size.height * 0.07,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                image: DecorationImage(
-                    image: NetworkImage(roomDeatails.image),
-                    fit: BoxFit.cover)),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Text(
-                roomDeatails.roomNumber,
-                style: Theme.of(context).textTheme.displayMedium,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) {
+            return RoomDeatailsShowingPage(roomId: roomDeatails.roomId);
+          },
+        ));
+      },
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 60),
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            color: MediaQuery.of(context).platformBrightness == Brightness.light
+                ? Colors.white
+                : Colors.black),
+        child: Row(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(5),
+              height: MediaQuery.of(context).size.height * 0.07,
+              width: MediaQuery.of(context).size.height * 0.07,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  image: DecorationImage(
+                      image: NetworkImage(roomDeatails.image),
+                      fit: BoxFit.cover)),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  roomDeatails.roomNumber,
+                  style: Theme.of(context).textTheme.displayMedium,
+                ),
               ),
             ),
-          ),
-          const Spacer(),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Icon(Icons.arrow_forward_ios),
-          )
-        ],
+            const Spacer(),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: Icon(Icons.arrow_forward_ios),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -540,41 +568,53 @@ class CommonWidget {
 
   userShowingContainer(
       {required BuildContext context, required UserModel userModel}) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 40),
-      margin: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100),
-          color: MediaQuery.of(context).platformBrightness == Brightness.light
-              ? Colors.white
-              : Colors.black),
-      child: Row(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(5),
-            height: MediaQuery.of(context).size.height * 0.05,
-            width: MediaQuery.of(context).size.height * 0.05,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              image: DecorationImage(
-                  image: NetworkImage(userModel.imagePath), fit: BoxFit.cover),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Text(
-                userModel.name,
-                style: Theme.of(context).textTheme.displayMedium,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) {
+            return ProfileOnly(
+              userModel: userModel,
+            );
+          },
+        ));
+      },
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 40),
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            color: MediaQuery.of(context).platformBrightness == Brightness.light
+                ? Colors.white
+                : Colors.black),
+        child: Row(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(5),
+              height: MediaQuery.of(context).size.height * 0.05,
+              width: MediaQuery.of(context).size.height * 0.05,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                image: DecorationImage(
+                    image: NetworkImage(userModel.imagePath),
+                    fit: BoxFit.cover),
               ),
             ),
-          ),
-          const Spacer(),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Icon(Icons.arrow_forward_ios),
-          )
-        ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  userModel.name,
+                  style: Theme.of(context).textTheme.displayMedium,
+                ),
+              ),
+            ),
+            const Spacer(),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: Icon(Icons.arrow_forward_ios),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -650,7 +690,7 @@ class CommonWidget {
                         ),
                       ),
                     ),
-                     InkWell(
+                    InkWell(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) {
@@ -786,7 +826,13 @@ class CommonWidget {
       },
       builder: (context, state) {
         return GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) {
+                return BookingDeatailsPage(roomBookingModel: roomBookingModel);
+              },
+            ));
+          },
           child: Container(
             margin: const EdgeInsets.all(10),
             decoration: BoxDecoration(
@@ -989,7 +1035,13 @@ class CommonWidget {
       {required RoomBookingModel roomBookingModel,
       required BuildContext context}) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) {
+            return BookingDeatailsPage(roomBookingModel: roomBookingModel);
+          },
+        ));
+      },
       child: Container(
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -1077,7 +1129,10 @@ class CommonWidget {
                     children: [
                       ElevatedButton(
                           style: Styles().editElevatedButtonStyle(),
-                          onPressed: () {},
+                          onPressed: () {
+                            SubAdminFunction().roomBookingPayByCash(
+                                roomBookingModel: roomBookingModel);
+                          },
                           child: Text(
                             'Pay with Cash',
                             style: Theme.of(context)
@@ -1140,7 +1195,13 @@ class CommonWidget {
       {required RoomBookingModel roomBookingModel,
       required BuildContext context}) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) {
+            return BookingDeatailsPage(roomBookingModel: roomBookingModel);
+          },
+        ));
+      },
       child: Container(
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -1295,12 +1356,17 @@ class CommonWidget {
       ),
     );
   }
+
 // history container
   historyContainer(
       {required RoomBookingModel roomBookingModel,
       required BuildContext context}) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              return BookingDeatailsPage(roomBookingModel: roomBookingModel);
+            },));
+      },
       child: Container(
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -1457,6 +1523,14 @@ class CommonWidget {
       errorBuilder: (context, error, stackTrace) {
         return Image.asset('assets/images/profile.png');
       },
+    );
+  }
+
+  // booking title text
+  bookingTitleText({required String text, required BuildContext context}) {
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.titleMedium,
     );
   }
 }

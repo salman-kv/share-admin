@@ -47,108 +47,124 @@ class SubAdminBookinPage extends StatelessWidget {
                                 .toList();
                             List<dynamic> roomIdList =
                                 snapshot.data!.docs.map((e) => e.id).toList();
-                            BlocProvider.of<BookingPageBloc>(context)
-                                .add(OnShufleRoomBooking(listOfRooms: val));
+                            BlocProvider.of<BookingPageBloc>(context).add(
+                                OnShufleRoomBooking(
+                                    listOfRooms: val,
+                                    listOfRoomId: roomIdList));
 
                             return BlocBuilder<BookingPageBloc,
                                 BookingPageState>(builder: (_, state) {
-                              return ListView(
-                                children: [
-                                  const Text('checkout pending'),
-                                  Column(
-                                    children: List.generate(roomIdList.length,
-                                        (index) {
-                                      return StreamBuilder(
-                                          stream: FirebaseFirestore.instance
-                                              .collection(FirebaseFirestoreConst
-                                                  .firebaseFireStoreRoomCollection)
-                                              .doc(roomIdList[index])
-                                              .collection(FirebaseFirestoreConst
-                                                  .firebaseFireStoreCurrentUserCheckInRoom)
-                                              .snapshots(),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.hasData) {
-                                              if (snapshot
-                                                  .data!.docs.isNotEmpty) {
-                                                if (snapshot.data!.docs[0]
-                                                                .data()[
-                                                            FirebaseFirestoreConst
-                                                                .firebaseFireStoreCheckInORcheckOutDeatails]
-                                                        [FirebaseFirestoreConst
-                                                            .firebaseFireStoreCheckInORcheckOutRequest] ==
-                                                    FirebaseFirestoreConst
-                                                        .firebaseFireStoreCheckInORcheckOutRequestForCheckOutWaiting) {
-                                                  return CommonWidget()
-                                                      .pendingVerificationRoomContainer(
-                                                          roomBookingModel:
-                                                              RoomBookingModel
-                                                                  .fromMap(snapshot
-                                                                      .data!
-                                                                      .docs[0]
-                                                                      .data()),
-                                                          context: context);
-                                                } else {
-                                                  return Text(
-                                                      'this room is not goinh to checkout');
-                                                }
-                                              } else {
-                                                return Text('no data');
-                                              }
-                                            } else {
-                                              return Text('no data');
-                                            }
-                                          });
-                                    }),
-                                  ),
-                                  const Text('verification pending'),
-                                  Column(
-                                    children: List.generate(
+                              return BlocProvider.of<BookingPageBloc>(context)
+                                          .checkOutVerificationPendingRooms
+                                          .isEmpty &&
+                                      BlocProvider.of<BookingPageBloc>(context)
+                                          .paymentPendingRooms
+                                          .isEmpty &&
+                                      BlocProvider.of<BookingPageBloc>(context)
+                                          .bookedRooms
+                                          .isEmpty &&
+                                      BlocProvider.of<BookingPageBloc>(context)
+                                          .verificationPendingRooms
+                                          .isEmpty
+                                  ? CommonWidget().noDataWidget(
+                                      text: 'No Booking related data found',
+                                      context: context)
+                                  : ListView(
+                                      children: [
                                         BlocProvider.of<BookingPageBloc>(
-                                                context)
-                                            .verificationPendingRooms
-                                            .length, (index) {
-                                      return CommonWidget()
-                                          .pendingVerificationRoomContainer(
-                                              roomBookingModel: BlocProvider
-                                                          .of<BookingPageBloc>(
-                                                              context)
-                                                      .verificationPendingRooms[
-                                                  index],
-                                              context: context);
-                                    }),
-                                  ),
-                                  const Text('payment pending'),
-                                  Column(
-                                    children: List.generate(
-                                        BlocProvider.of<BookingPageBloc>(
-                                                context)
-                                            .paymentPendingRooms
-                                            .length, (index) {
-                                      return CommonWidget()
-                                          .paymentPendingRoomContainer(
-                                              roomBookingModel: BlocProvider.of<
-                                                      BookingPageBloc>(context)
-                                                  .paymentPendingRooms[index],
-                                              context: context);
-                                    }),
-                                  ),
-                                  const Text('booked rooms'),
-                                  Column(
-                                    children: List.generate(
-                                        BlocProvider.of<BookingPageBloc>(
-                                                context)
-                                            .bookedRooms
-                                            .length, (index) {
-                                      return CommonWidget().bookedRoomContainer(
-                                          roomBookingModel:
+                                                    context)
+                                                .checkOutVerificationPendingRooms
+                                                .isEmpty
+                                            ? const SizedBox()
+                                            : CommonWidget().bookingTitleText(
+                                                text: 'Check Out Pending',
+                                                context: context),
+                                        Column(
+                                          children: List.generate(
                                               BlocProvider.of<BookingPageBloc>(
                                                       context)
-                                                  .bookedRooms[index],
-                                          context: context);
-                                    }),
-                                  )
-                                ],
-                              );
+                                                  .checkOutVerificationPendingRooms
+                                                  .length, (index) {
+                                            return CommonWidget()
+                                                .pendingVerificationRoomContainer(
+                                                    roomBookingModel: BlocProvider
+                                                            .of<BookingPageBloc>(
+                                                                context)
+                                                        .checkOutVerificationPendingRooms[index],
+                                                    context: context);
+                                          }),
+                                        ),
+                                        BlocProvider.of<BookingPageBloc>(
+                                                    context)
+                                                .verificationPendingRooms
+                                                .isEmpty
+                                            ? const SizedBox()
+                                            : CommonWidget().bookingTitleText(
+                                                text: 'Check In Pending',
+                                                context: context),
+                                        Column(
+                                          children: List.generate(
+                                              BlocProvider.of<BookingPageBloc>(
+                                                      context)
+                                                  .verificationPendingRooms
+                                                  .length, (index) {
+                                            return CommonWidget()
+                                                .pendingVerificationRoomContainer(
+                                                    roomBookingModel: BlocProvider
+                                                            .of<BookingPageBloc>(
+                                                                context)
+                                                        .verificationPendingRooms[index],
+                                                    context: context);
+                                          }),
+                                        ),
+                                        BlocProvider.of<BookingPageBloc>(
+                                                    context)
+                                                .paymentPendingRooms
+                                                .isEmpty
+                                            ? const SizedBox()
+                                            : CommonWidget().bookingTitleText(
+                                                text: 'Payment Pending',
+                                                context: context),
+                                        Column(
+                                          children: List.generate(
+                                              BlocProvider.of<BookingPageBloc>(
+                                                      context)
+                                                  .paymentPendingRooms
+                                                  .length, (index) {
+                                            return CommonWidget()
+                                                .paymentPendingRoomContainer(
+                                                    roomBookingModel: BlocProvider
+                                                            .of<BookingPageBloc>(
+                                                                context)
+                                                        .paymentPendingRooms[index],
+                                                    context: context);
+                                          }),
+                                        ),
+                                        BlocProvider.of<BookingPageBloc>(
+                                                    context)
+                                                .bookedRooms
+                                                .isEmpty
+                                            ? const SizedBox()
+                                            : CommonWidget().bookingTitleText(
+                                                text: 'Booked Rooms',
+                                                context: context),
+                                        Column(
+                                          children: List.generate(
+                                              BlocProvider.of<BookingPageBloc>(
+                                                      context)
+                                                  .bookedRooms
+                                                  .length, (index) {
+                                            return CommonWidget()
+                                                .bookedRoomContainer(
+                                                    roomBookingModel: BlocProvider
+                                                            .of<BookingPageBloc>(
+                                                                context)
+                                                        .bookedRooms[index],
+                                                    context: context);
+                                          }),
+                                        )
+                                      ],
+                                    );
                             });
                           }
                         }
