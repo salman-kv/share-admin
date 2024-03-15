@@ -9,7 +9,7 @@ import 'package:share_sub_admin/domain/enum/hotel_type.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
 import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/location/location_picking_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/location/location_picking_page.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 

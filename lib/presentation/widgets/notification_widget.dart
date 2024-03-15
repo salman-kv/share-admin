@@ -12,7 +12,7 @@ import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/functions/time_notification_function.dart';
 import 'package:share_sub_admin/domain/model/notification_model.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/notification/notification.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/notification/notification.dart';
 
 class NotificationWidget {
   notificationButton({required BuildContext context}) {

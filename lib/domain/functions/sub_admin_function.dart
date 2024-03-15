@@ -23,7 +23,7 @@ import 'package:share_sub_admin/domain/model/sub_admin_model.dart';
 import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/alerts/toasts.dart';
 import 'package:share_sub_admin/presentation/screens/sub_admin_login/sub_admin_login_page.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/hotel_property/property_adding_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/hotel_property/property_adding_page.dart';
 
 class SubAdminFunction {
   // -----------------------------------------------------------------------------------------------------------

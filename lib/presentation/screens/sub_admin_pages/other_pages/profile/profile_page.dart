@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_bloc.dart';
 import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_state.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/profile/edit_profile_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/profile/edit_profile_page.dart';
 import 'package:share_sub_admin/presentation/widgets/common_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 

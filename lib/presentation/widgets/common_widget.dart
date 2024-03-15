@@ -19,15 +19,17 @@ import 'package:share_sub_admin/domain/model/user_model.dart';
 import 'package:share_sub_admin/presentation/alerts/alert.dart';
 import 'package:share_sub_admin/presentation/alerts/snack_bars.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/booking_deatails/booking_deatails_page.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/history_page/history_page.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/hotel_property/property_adding_page.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/profile/profile_only.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/profile/profile_page.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_deatails_page.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_edit_page.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_page.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/single_room_showing_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/booking_deatails/booking_deatails_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/history_page/history_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/hotel_property/property_adding_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/privacy_policy/privacy_policy.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/profile/profile_only.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/profile/profile_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/room_pages/room_deatails_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/room_pages/room_edit_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/room_pages/room_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/room_pages/single_room_showing_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/terms_and_condition/terms_and_condition.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 class CommonWidget {
@@ -720,7 +722,11 @@ class CommonWidget {
                       ),
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                            return const PrivacyPolicyScreen();
+                        },));
+                      },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 7),
@@ -743,7 +749,11 @@ class CommonWidget {
                       ),
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                            return const TermsAndConditions();
+                        },));
+                      },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 7),

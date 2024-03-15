@@ -6,7 +6,7 @@ import 'package:lottie/lottie.dart';
 import 'package:share_sub_admin/application/sub_admin_login_bloc/sub_admin_login_bloc.dart';
 import 'package:share_sub_admin/domain/const/firebasefirestore_constvalue.dart';
 import 'package:share_sub_admin/domain/model/main_property_model.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/hotel_property/property_adding_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/hotel_property/property_adding_page.dart';
 import 'package:share_sub_admin/presentation/widgets/common_widget.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 

@@ -5,7 +5,7 @@ import 'package:share_sub_admin/application/room_property_bloc/room_property_blo
 import 'package:share_sub_admin/domain/model/room_model.dart';
 import 'package:share_sub_admin/presentation/alerts/alert.dart';
 import 'package:share_sub_admin/presentation/cosnt/const_colors.dart';
-import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_property_pages/room_pages/room_edit_page.dart';
+import 'package:share_sub_admin/presentation/screens/sub_admin_pages/other_pages/room_pages/room_edit_page.dart';
 import 'package:share_sub_admin/presentation/widgets/styles.dart';
 
 class SingleRoomShowingPage extends StatelessWidget {
